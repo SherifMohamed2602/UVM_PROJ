@@ -5,7 +5,8 @@ class pd_debug_agent extends uvm_agent;
     uvm_analysis_port #(pd_debug_seq_item) agt_ap;
 
     pd_debug_driver pd_debug_drv;
-    pd_debug_sequencer pd_debug_sqr;
+    //pd_debug_sequencer pd_debug_sqr;
+    uvm_sequencer #(pd_debug_seq_item) pd_debug_sqr;
     pd_debug_monitor pd_debug_mon;
     pd_debug_config_agt pd_debug_agt_cfg;
 

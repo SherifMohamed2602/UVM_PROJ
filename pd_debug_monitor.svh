@@ -30,9 +30,13 @@ class pd_debug_monitor extends uvm_monitor;
             repeat(3)begin 
                 @(negedge PD_vif.clk);
             end
-            PD_if.get(seq_item);
+            PD_vif.get(seq_item);
+
+            `uvm_info("run_phase", seq_item.convert2string_in3(), UVM_LOW);
+            `uvm_info("run_phase", seq_item.convert2string_out(), UVM_LOW);
+
+
             mon_ap.write(seq_item);
-            `uvm_info("run_phase", seq_item.convert2string(), UVM_HIGH);
 
 
         end

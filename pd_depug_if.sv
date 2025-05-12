@@ -23,7 +23,7 @@ import pd_debug_pkg::*;    // Transaction classes
     logic [PD_WIDTH-1:0] 		       mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray_3;
     logic [3:0] 			           cif2dbg_c_debug_pd_en_reg_1; 
     logic [3:0] 			           cif2dbg_c_debug_pd_en_reg_2;
-    logic [3:0] 			           cif2dbg_c_debug_pd_en_reg_3
+    logic [3:0] 			           cif2dbg_c_debug_pd_en_reg_3;
 
     logic [PD_MUX_SEL_WIDTH:0] 	       cif2dbg_c_debug_pd_captured_word_sel_1; 
     logic [PD_MUX_SEL_WIDTH:0] 	       cif2dbg_c_debug_pd_captured_word_sel_2; 
@@ -44,6 +44,7 @@ import pd_debug_pkg::*;    // Transaction classes
 
 
     task automatic send(pd_debug_seq_item seq_item);
+
         @(negedge clk);
 
         rstn    = seq_item.rstn;
@@ -67,7 +68,7 @@ import pd_debug_pkg::*;    // Transaction classes
 
         cif2dbg_c_debug_pd_en_reg_1 = seq_item.cif2dbg_c_debug_pd_en_reg_1; 
         cif2dbg_c_debug_pd_en_reg_2 = seq_item.cif2dbg_c_debug_pd_en_reg_2;
-        cif2dbg_c_debug_pd_en_reg_3 = seq_item.cif2dbg_c_debug_pd_en_reg_3
+        cif2dbg_c_debug_pd_en_reg_3 = seq_item.cif2dbg_c_debug_pd_en_reg_3;
 
         cif2dbg_c_debug_pd_captured_word_sel_1 = seq_item.cif2dbg_c_debug_pd_captured_word_sel_1; 
         cif2dbg_c_debug_pd_captured_word_sel_2 = seq_item.cif2dbg_c_debug_pd_captured_word_sel_2; 
@@ -99,7 +100,7 @@ import pd_debug_pkg::*;    // Transaction classes
 
         seq_item.cif2dbg_c_debug_pd_en_reg_1 = cif2dbg_c_debug_pd_en_reg_1; 
         seq_item.cif2dbg_c_debug_pd_en_reg_2 = cif2dbg_c_debug_pd_en_reg_2;
-        seq_item.cif2dbg_c_debug_pd_en_reg_3 = cif2dbg_c_debug_pd_en_reg_3
+        seq_item.cif2dbg_c_debug_pd_en_reg_3 = cif2dbg_c_debug_pd_en_reg_3;
 
         seq_item.cif2dbg_c_debug_pd_captured_word_sel_1 = cif2dbg_c_debug_pd_captured_word_sel_1; 
         seq_item.cif2dbg_c_debug_pd_captured_word_sel_2 = cif2dbg_c_debug_pd_captured_word_sel_2; 

@@ -13,6 +13,9 @@ class pd_debug_coverage extends uvm_subscriber #(pd_debug_seq_item);
 
         count_seq_cv   : coverpoint seq_item.e_valid iff (seq_item.rstn);
 
+        count_en1   : coverpoint seq_item.cif2dbg_c_debug_pd_en_reg_1[0] iff (seq_item.rstn);
+
+
         // count_seq_cv   : coverpoint seq_item. iff (seq_item.rstn){
         //     bins   =;
         // }

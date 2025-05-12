@@ -20,7 +20,7 @@ class pd_debug_base_test extends uvm_test;
         pd_debug_agt_cfg.pd_debug_agent_state = UVM_ACTIVE;
 
 
-        if(!uvm_config_db #(virtual PD_if)::get(this, "", "PD_if", pd_debug_agt_cfg.PD_vif))
+        if(!uvm_config_db #(virtual pd_debug_if)::get(this, "", "PD_vif", pd_debug_agt_cfg.PD_vif))
             `uvm_fatal("build_phase", "TEST - unable to get the interface from the uvm_config_db");
 
         uvm_config_db #(pd_debug_config_env)::set(this, "pd_env", "pd_debug_env_cfg", pd_debug_env_cfg);

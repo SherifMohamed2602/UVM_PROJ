@@ -1,9 +1,6 @@
 class pd_debug_count_test extends pd_debug_base_test;
     `uvm_component_utils(pd_debug_count_test)
 
-    pd_debug_env pd_env;
-    pd_debug_config_env pd_debug_env_cfg;
-    pd_debug_config_agt pd_debug_agt_cfg;
     pd_debug_reset_sequence reset_seq;
     pd_debug_count_sequence count_seq;
 
@@ -28,14 +25,16 @@ class pd_debug_count_test extends pd_debug_base_test;
         phase.raise_objection(this);
         //reset_sequence
         `uvm_info("run_phase", "Reset Sequence Started", UVM_LOW);
+        //reset_seq.init_start(pd_env.pd_debug_agt.pd_debug_sqr);
         reset_seq.init_start(pd_debug_agt_cfg.pd_debug_sqr);
-        `uvm_info("run_phase", "Reset Sequence Started", UVM_LOW);
+        `uvm_info("run_phase", "Reset Sequence Ended", UVM_LOW);
         
         //main_sequence
         `uvm_info("run_phase", "Stimulus Generation Started", UVM_LOW);
 
         //Count Sequence
         `uvm_info("run_phase", "Count Sequence Started", UVM_LOW);
+        //count_seq.init_start(pd_env.pd_debug_agt.pd_debug_sqr);
         count_seq.init_start(pd_debug_agt_cfg.pd_debug_sqr);
         `uvm_info("run_phase", "Count Sequence Ended", UVM_LOW);
 

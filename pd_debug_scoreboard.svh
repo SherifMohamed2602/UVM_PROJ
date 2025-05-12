@@ -17,52 +17,48 @@ class pd_debug_scoreboard extends uvm_scoreboard;
         scb_export = new("scb_export", this);
     endfunction 
 
+
+
     virtual function void write(input pd_debug_seq_item t);
+        
+        automatic bit mismatch = 0;
 
         pd_debug_seq_item exp;
         exp = pd_debug_seq_item::type_id::create("exp");
+        
         predictor(t, exp);
 
-        automatic bit mismatch = 0;
 
         if ((t.dbg2cif_e_debug_pd_field1_cnt_inc !== exp.dbg2cif_e_debug_pd_field1_cnt_inc) ||
             (t.dbg2cif_e_debug_pd_field1_byte_cnt_inc !== exp.dbg2cif_e_debug_pd_field1_byte_cnt_inc)) 
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in field1 counters, 
-                        Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, 
-                        While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b", t.dbg2cif_e_debug_pd_field1_cnt_inc,
-                         t.dbg2cif_e_debug_pd_field1_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field1_cnt_inc,
-                         exp.dbg2cif_e_debug_pd_field1_byte_cnt_inc))
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in field1 counters, Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b",
+                t.dbg2cif_e_debug_pd_field1_cnt_inc, t.dbg2cif_e_debug_pd_field1_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field1_cnt_inc,
+                exp.dbg2cif_e_debug_pd_field1_byte_cnt_inc))
             mismatch = 1;
         end
 
         if ((t.dbg2cif_e_debug_pd_field2_cnt_inc !== exp.dbg2cif_e_debug_pd_field2_cnt_inc) ||
             (t.dbg2cif_e_debug_pd_field2_byte_cnt_inc !== exp.dbg2cif_e_debug_pd_field2_byte_cnt_inc)) 
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in field2 counters, 
-                        Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, 
-                        While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b", t.dbg2cif_e_debug_pd_field2_cnt_inc,
-                         t.dbg2cif_e_debug_pd_field2_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field2_cnt_inc,
-                         exp.dbg2cif_e_debug_pd_field2_byte_cnt_inc))
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in field2 counters, Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b",
+                t.dbg2cif_e_debug_pd_field2_cnt_inc, t.dbg2cif_e_debug_pd_field2_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field2_cnt_inc,
+                exp.dbg2cif_e_debug_pd_field2_byte_cnt_inc))
             mismatch = 1;
         end
 
 
         if (t.dbg2cif_e_debug_pd_total_pd_cnt_inc !== exp.dbg2cif_e_debug_pd_total_pd_cnt_inc)
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in total counter, 
-                        Recieved by the DUT total_pd_cnt_inc: %0b, 
-                        While the reference: %0b", t.dbg2cif_e_debug_pd_total_pd_cnt_inc,
-                        exp.dbg2cif_e_debug_pd_total_pd_cnt_inc))
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in total counter, Recieved by the DUT total_pd_cnt_inc: %0b, While the reference: %0b",
+                t.dbg2cif_e_debug_pd_total_pd_cnt_inc, exp.dbg2cif_e_debug_pd_total_pd_cnt_inc))
             mismatch = 1;
         end
 
         if (t.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount !== exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount)
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in total byte count increment amount, 
-                        Recieved by the DUT: %0b, 
-                        While the reference: %0b", t.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount,
-                        exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount))
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in total byte count increment amount, Recieved by the DUT: %0b, While the reference: %0b",
+                t.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount, exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount))
             mismatch = 1;
         end
 
@@ -71,46 +67,40 @@ class pd_debug_scoreboard extends uvm_scoreboard;
             (t.dbg2cif_e_debug_pd_capture_match_field2 !== exp.dbg2cif_e_debug_pd_capture_match_field2) || 
             (t.capture_match_o !== exp.capture_match_o)) 
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in matching flags, 
-                        Recieved by the DUT _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b,
-                        While the reference _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b",
-                         t.dbg2cif_e_debug_pd_capture_match_cnt_inc, t.dbg2cif_e_debug_pd_capture_match_field1, 
-                         t.dbg2cif_e_debug_pd_capture_match_field2, t.capture_match_o,
-                         exp.dbg2cif_e_debug_pd_capture_match_cnt_inc, exp.dbg2cif_e_debug_pd_capture_match_field1
-                         exp.dbg2cif_e_debug_pd_capture_match_field2, exp.capture_match_o))
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in matching flags, Recieved by the DUT _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b,While the reference _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b",
+                         t.dbg2cif_e_debug_pd_capture_match_cnt_inc, t.dbg2cif_e_debug_pd_capture_match_field1, t.dbg2cif_e_debug_pd_capture_match_field2, t.capture_match_o,
+                         exp.dbg2cif_e_debug_pd_capture_match_cnt_inc, exp.dbg2cif_e_debug_pd_capture_match_field1, exp.dbg2cif_e_debug_pd_capture_match_field2, exp.capture_match_o))
             mismatch = 1;
         end
 
 
         if (t.dbg2cif_c_debug_pd_out !== exp.dbg2cif_c_debug_pd_out)
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in pd_out, 
-                        Recieved by the DUT: %0b, While the reference: %0b", 
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in captured pd_out, Recieved by the DUT: %0h, While the reference: %0h", 
                         t.dbg2cif_c_debug_pd_out, exp.dbg2cif_c_debug_pd_out))
             mismatch = 1;
         end        
         
         if (t.eq_pd_out !== exp.eq_pd_out)
         begin
-            `uvm_error(get_type_name(), $sformatf("Comparison failed in cascaded ep_pd, 
-                        Recieved by the DUT: %0b, While the reference: %0b",
+            `uvm_error(get_type_name(), $sformatf("Comparison failed in cascaded ep_pd, Recieved by the DUT: %0h, While the reference: %0h",
                         t.eq_pd_out, exp.eq_pd_out))
             mismatch = 1;
         end
 
         if (mismatch)begin  
-            `uvm_error(get_type_name(), "Comparison failed");
+            `uvm_error(get_type_name(), "Comparison failed")
             error_count++;
         end
         else begin
-            `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH);
+            `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
             correct_count++;
         end
 
     endfunction
 
 
-    virtual task automatic predictor(input pd_debug_seq_item actual, ref pd_debug_seq_item exp);
+    virtual function automatic void predictor(input pd_debug_seq_item actual, ref pd_debug_seq_item exp);
 
         // internals for the model
         logic field1_matched  = 0; 
@@ -154,8 +144,13 @@ class pd_debug_scoreboard extends uvm_scoreboard;
 
         end
         else begin
+
+            exp.eq_pd_out[113] = actual.eq_pd[113] || cascaded_capture;
+
+
             // Counting model
-            exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = exp.eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH]
+            exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = actual.eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
+
             if (actual.e_valid && (actual.cif2dbg_c_debug_pd_en_reg_3[0] == 1)) begin 
 
                 exp.dbg2cif_e_debug_pd_total_pd_cnt_inc = 1;
@@ -190,7 +185,7 @@ class pd_debug_scoreboard extends uvm_scoreboard;
                         exp.dbg2cif_e_debug_pd_capture_match_field2 = 1;
                         field2_captured = 1;
                         if (actual.cif2dbg_c_debug_pd_captured_word_sel_3[0] == 1) begin 
-                            exp.eq_pd_out = select_32(actual.cif2dbg_c_debug_pd_captured_word_sel_3[PD_MUX_SEL_WIDTH:1], actual.eq_pd);
+                            exp.dbg2cif_c_debug_pd_out = select_32(actual.cif2dbg_c_debug_pd_captured_word_sel_3[PD_MUX_SEL_WIDTH:1], actual.eq_pd);
                         end
                     end
                 end
@@ -201,18 +196,17 @@ class pd_debug_scoreboard extends uvm_scoreboard;
                         exp.dbg2cif_e_debug_pd_capture_match_field1 = 1;
                         exp.capture_match_o = 1;
                         if (actual.cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0) begin 
-                            exp.eq_pd_out = select_32(actual.cif2dbg_c_debug_pd_captured_word_sel_3[PD_MUX_SEL_WIDTH:1], actual.eq_pd);
+                            exp.dbg2cif_c_debug_pd_out = select_32(actual.cif2dbg_c_debug_pd_captured_word_sel_3[PD_MUX_SEL_WIDTH:1], actual.eq_pd);
                         end
                     end
                 end
             end 
         end
-
-        exp.eq_pd_out[113] = actual.eq_pd[113] | cascaded_capture;
     
-    endtask
+    endfunction
 
-    function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] word_sel,
+
+function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] word_sel,
                                             input logic [PD_WIDTH-1:0] eq_pd);
 
         localparam int num_of_chunks = (PD_WIDTH % 32 == 0) ? (PD_WIDTH / 32) : (PD_WIDTH / 32 + 1);

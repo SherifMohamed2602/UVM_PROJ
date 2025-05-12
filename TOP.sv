@@ -20,7 +20,6 @@ module TOP ();
 
     ) pd_debug_u (
         .clk(clk),
-        .CFG_anchor_clk_override,
         .rstn(PD_if.rstn),
         .e_valid(PD_if.e_valid), 
         .eq_pd(PD_if.eq_pd),
@@ -62,7 +61,9 @@ module TOP ();
 
     initial begin
 
-        uvm_config_db #(virtual pd_debug_if)::set(null, "uvm_test_top", "PD_if", PD_if);
+        clk = 0;
+
+        uvm_config_db #(virtual pd_debug_if)::set(null, "uvm_test_top", "PD_vif", PD_if);
 
         run_test();
     end

@@ -2,15 +2,15 @@
 
 //
 // DUT Source Files
-RTL/gen_multicycle_debug_data_mux.v
-RTL/control_pd_debug_with_capture_v3.v
-RTL/pd_debug_wrapper.v
+gen_multicycle_debug_data_mux.v
+control_pd_debug_with_capture_v3.sv
+pd_debug_wrapper.sv
 
 //
 // UVM Testbench Source Files
-UVM/pd_depug_pkg.sv
-UVM/pd_depug_if.sv
-UVM/TOP.sv
+pd_depug_pkg.sv
+pd_depug_if.sv
+TOP.sv
 
 //
 // UVM run-time command-line options

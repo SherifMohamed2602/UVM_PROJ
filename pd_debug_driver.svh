@@ -22,10 +22,11 @@ class pd_debug_driver extends uvm_driver #(pd_debug_seq_item);
         forever begin
             seq_item = pd_debug_seq_item::type_id::create("seq_item");
             seq_item_port.get_next_item(seq_item);
-            PD_if.send(seq_item);
+            PD_vif.send(seq_item);
             seq_item_port.item_done();
+            `uvm_info("run_phase", "Seq item sent form driver", UVM_HIGH);
 
-            `uvm_info("run_phase", seq_item.convert2string_stimulus(), UVM_HIGH);
+            `uvm_info("run_phase", seq_item.convert2string(), UVM_LOW);
 
             repeat(3)begin 
                 @(negedge PD_vif.clk);
