@@ -6,7 +6,7 @@ import pd_debug_pkg::*;    // Transaction classes
 
     logic 			                   rstn;
     logic                              e_valid;
-    logic                              eq_pd;
+    logic [PD_WIDTH-1:0]               eq_pd;
     logic [PD_WIDTH-1:0]               mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_1;
     logic [PD_WIDTH-1:0] 		       mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_1;
     logic [PD_WIDTH-1:0] 		       mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_1;
