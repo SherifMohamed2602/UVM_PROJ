@@ -120,6 +120,7 @@ import pd_debug_pkg::*;    // Transaction classes
         seq_item.capture_match_o        = capture_match_o; 
         seq_item.dbg2cif_c_debug_pd_out = dbg2cif_c_debug_pd_out; 
         seq_item.eq_pd_out              = eq_pd_out; 
+        
 
 
     endtask

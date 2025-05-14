@@ -20,6 +20,8 @@ typedef class pd_debug_seq_item;
 typedef class pd_debug_reset_sequence;
 typedef class pd_debug_count_sequence;
 typedef class pd_debug_capture_sequence;
+typedef class pd_debug_capture_first_sequence;
+typedef class pd_debug_cascade_sequence;
 typedef class pd_debug_driver;
 typedef class pd_debug_monitor;
 typedef class pd_debug_agent;
@@ -29,6 +31,8 @@ typedef class pd_debug_scoreboard;
 typedef class pd_debug_base_test;
 typedef class pd_debug_count_test;
 typedef class pd_debug_capture_test;
+typedef class pd_debug_capture_first_test;
+typedef class pd_debug_cascade_test;
 typedef class pd_debug_config_env;
 typedef class pd_debug_config_agt;
 
@@ -48,9 +52,14 @@ typedef class pd_debug_config_agt;
 `include "pd_debug_reset_sequence.svh"
 `include "pd_debug_count_sequence.svh"
 `include "pd_debug_capture_sequence.svh"
+`include "pd_debug_capture_first_sequence.svh"
+`include "pd_debug_cascade_sequence.svh"
 `include "pd_debug_count_test.svh"
 `include "pd_debug_base_test.svh"
 `include "pd_debug_capture_test.svh"
+`include "pd_debug_capture_first_test.svh"
+`include "pd_debug_cascade_test.svh"
+
 
 
 

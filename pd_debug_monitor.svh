@@ -27,7 +27,7 @@ class pd_debug_monitor extends uvm_monitor;
         super.run_phase(phase);
         forever begin
             seq_item = pd_debug_seq_item::type_id::create("seq_item");
-            repeat(3)begin 
+            repeat(pd_debug_agt_cfg.driving_cycles)begin 
                 @(negedge PD_vif.clk);
             end
             PD_vif.get(seq_item);

@@ -7,6 +7,7 @@ class pd_debug_config_agt extends uvm_object;
 
     int monitor_verbosity = UVM_FULL;
     uvm_sequencer #(pd_debug_seq_item) pd_debug_sqr;
+    int driving_cycles = 3;
 
     function new(string name = "pd_debug_config_agt");
         super.new(name);

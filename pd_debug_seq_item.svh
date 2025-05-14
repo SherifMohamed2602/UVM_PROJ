@@ -47,6 +47,7 @@ class pd_debug_seq_item extends uvm_sequence_item;
     
     rand bit match_field1;
     rand bit match_field2;
+    randc bit [1:0] cascade_match;
 
 
 
@@ -56,7 +57,7 @@ class pd_debug_seq_item extends uvm_sequence_item;
 
     virtual function string convert2string_in();
         return $sformatf("\nInputs:  \nrstn = %b, \ne_valid = %b, \neq_pd = %h, eq_pd[113] = %b\n
-Inputs to Second instance: \nfield1_val_1 = %h, \nfield1_mask_1 = %h, \nfield2_val_1 = %h, \nfield2_mask_1 = %h, \nen_reg_1 = %b, \ncaptured_word_sel_1 = %d, \n
+Inputs to First instance: \nfield1_val_1 = %h, \nfield1_mask_1 = %h, \nfield2_val_1 = %h, \nfield2_mask_1 = %h, \nen_reg_1 = %b, \ncaptured_word_sel_1 = %d, \n
 Inputs to Second instance: \nfield1_val_2 = %h, \nfield1_mask_2 = %h, \nfield2_val_2 = %h, \nfield2_mask_2 = %h, \nen_reg_2 = %b, \ncaptured_word_sel_2 = %d, \n
 Inputs to third instance: \nfield1_val_3 = %h, \nfield1_mask3 = %h, \nfield2_val_3 = %h, \nfield2_mask3 = %h, \nen_reg_3 = %b, \ncaptured_word_sel_3 = %d \n",
             rstn,
@@ -134,34 +135,81 @@ Inputs to third instance: \nfield1_val_3 = %h, \nfield1_mask3 = %h, \nfield2_val
 
     }
 
-    constraint pd_debug_capture_always_on_c {
+    constraint pd_debug_capture_last_en_c {
+
+        e_valid dist {0:/ 30, 1:/ 70};
         
+        cif2dbg_c_debug_pd_en_reg_3[3] == 1;
+        cif2dbg_c_debug_pd_en_reg_3[1:0] == 2'b11;
+
+    }
+
+    constraint pd_debug_capture_only_first_f1_c {
+        
+        rstn  == 1;
+        e_valid == 1;
+        mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_3 == eq_pd;
+        cif2dbg_c_debug_pd_en_reg_3[3] == 0;
+        cif2dbg_c_debug_pd_en_reg_3[1:0] == 2'b11;
+
+    }
+
+
+    constraint pd_debug_capture_only_first_f2_c {
+        
+        rstn  == 1;
+        e_valid == 1;
+        mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_3 == eq_pd;
+        cif2dbg_c_debug_pd_en_reg_3[3] == 0;
+        cif2dbg_c_debug_pd_en_reg_3[1:0] == 2'b11;
+
+    }
+
+    constraint pd_debug_cascade_match_c {
+        rstn == 1;
+
+        e_valid dist {0:/ 5, 1:/ 95};
+
+        eq_pd[113] == 0;
+
+        cascade_match inside {0, 1, 2};
+
+        (cascade_match == 2'b00) -> (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_1) == (eq_pd);
+        
+        (cascade_match == 2'b01) -> (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_2) == (eq_pd);
+
+        (cascade_match == 2'b10) -> (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_3) == (eq_pd);
+
+        cif2dbg_c_debug_pd_en_reg_1 == 4'b1011;
+        cif2dbg_c_debug_pd_en_reg_2 == 4'b1011;
         cif2dbg_c_debug_pd_en_reg_3 == 4'b1111;
-        // cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0;
-
-    }
-
-    constraint pd_debug_capture_last_on_c {
-        
-        cif2dbg_c_debug_pd_en_reg_3 == 4'b0111;
-        // cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0;
+        cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0; 
 
     }
 
 
-    constraint pd_debug_cascade_bug_c {
+    constraint pd_debug_cascade_trigger_c {
         rstn == 1;
         e_valid == 1;
-        eq_pd[113] == 0;
-        (match_field1) -> (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_3 & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_3) == (eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_3);
-        (match_field2) -> (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_3 & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray_3) == (eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray_3);
-        
-        (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_1 & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_1) == (eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_1);
+        eq_pd[113] == 1;
 
-        cif2dbg_c_debug_pd_en_reg_1 == 4'b1111;
-        cif2dbg_c_debug_pd_en_reg_2 == 4'b0001;
-        cif2dbg_c_debug_pd_en_reg_3 == 4'b0001;
-        //cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0;
+        cascade_match inside {0, 1, 2};
+
+        (cascade_match == 2'b00) -> (cif2dbg_c_debug_pd_en_reg_1[2] == 1);
+        
+        (cascade_match == 2'b01) -> (cif2dbg_c_debug_pd_en_reg_2[2] == 1);
+
+        (cascade_match == 2'b10) -> (cif2dbg_c_debug_pd_en_reg_3[2] == 1);
+
+        cif2dbg_c_debug_pd_en_reg_1[1:0] == 2'b11;
+        cif2dbg_c_debug_pd_en_reg_2[1:0] == 2'b11;
+        cif2dbg_c_debug_pd_en_reg_3[1:0] == 2'b11;
+
+        cif2dbg_c_debug_pd_en_reg_1[3] == 1;
+        cif2dbg_c_debug_pd_en_reg_2[3] == 1;
+        cif2dbg_c_debug_pd_en_reg_3[3] == 1;
+
+        cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0; 
 
     }
 

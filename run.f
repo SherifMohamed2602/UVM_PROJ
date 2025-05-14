@@ -1,8 +1,7 @@
--lint -suppress 2181,2286
 
 //
 // DUT Source Files
-gen_multicycle_debug_data_mux.v
+gen_multicycle_debug_data_mux.sv
 control_pd_debug_with_capture_v3.sv
 pd_debug_wrapper.sv
 

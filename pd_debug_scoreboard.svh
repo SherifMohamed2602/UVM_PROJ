@@ -10,7 +10,7 @@ class pd_debug_scoreboard extends uvm_scoreboard;
     int counting_correct_count, counting_error_count;
     int capture_correct_count, capture_error_count;
     int cascade_correct_count, cascade_error_count;
-    int total_correct_count, total_error_count;
+    int capture_first_correct_count, capture_first_error_count;
 
 
     function new(string name = "pd_debug_scoreboard", uvm_component parent = null);
@@ -29,6 +29,7 @@ class pd_debug_scoreboard extends uvm_scoreboard;
         automatic bit reset_mismatch = 0;
         automatic bit count_mismatch = 0;
         automatic bit capture_mismatch = 0;
+        automatic bit capture_first_mismatch = 0;
         automatic bit cascade_mismatch = 0;
 
 
@@ -95,10 +96,13 @@ class pd_debug_scoreboard extends uvm_scoreboard;
             `uvm_error(get_type_name(), $sformatf("Comparison failed in matching flags, Recieved by the DUT _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b,While the reference _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b",
                          t.dbg2cif_e_debug_pd_capture_match_cnt_inc, t.dbg2cif_e_debug_pd_capture_match_field1, t.dbg2cif_e_debug_pd_capture_match_field2, t.capture_match_o,
                          exp.dbg2cif_e_debug_pd_capture_match_cnt_inc, exp.dbg2cif_e_debug_pd_capture_match_field1, exp.dbg2cif_e_debug_pd_capture_match_field2, exp.capture_match_o))
-            if (t.rstn)
-                capture_mismatch = 1;
-            else 
+            if (~t.rstn)
                 reset_mismatch = 1;
+            else if (t.cif2dbg_c_debug_pd_en_reg_3[3] == 0)
+                capture_first_mismatch = 1;
+            else 
+                capture_mismatch = 1;
+
         end
 
 
@@ -146,8 +150,19 @@ class pd_debug_scoreboard extends uvm_scoreboard;
                 capture_error_count++;
             end
             else begin
-                `uvm_info(get_type_name(), "Correct outputs", UVM_LOW)
+                `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
                 capture_correct_count++;
+            end
+
+            if (t.cif2dbg_c_debug_pd_en_reg_3[3] == 0) begin
+                if (capture_first_mismatch)begin  
+                    `uvm_error(get_type_name(), "Comparison failed")
+                    capture_first_error_count++;
+                end
+                else begin
+                    `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
+                    capture_first_correct_count++;
+                end
             end
 
             if (cascade_mismatch)begin  
@@ -208,9 +223,6 @@ class pd_debug_scoreboard extends uvm_scoreboard;
         end
         else begin
 
-            exp.eq_pd_out[113] = actual.eq_pd[113] || cascaded_capture;
-
-
             // Counting model
             exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = actual.eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
 
@@ -232,7 +244,7 @@ class pd_debug_scoreboard extends uvm_scoreboard;
                     exp.dbg2cif_e_debug_pd_field2_byte_cnt_inc = 1;
                 end
 
-                if ((actual.cif2dbg_c_debug_pd_en_reg_3[2] == 1) && (actual.eq_pd[113]) || cascaded_capture) begin 
+                if ((actual.cif2dbg_c_debug_pd_en_reg_3[2] == 1) && ((actual.eq_pd[113]) || cascaded_capture)) begin 
                     exp.dbg2cif_e_debug_pd_capture_match_cnt_inc = 1;
                     capture_trigger = 1;
                 end
@@ -263,7 +275,10 @@ class pd_debug_scoreboard extends uvm_scoreboard;
                         end
                     end
                 end
-            end 
+            end
+
+                exp.eq_pd_out[113] = actual.eq_pd[113] || cascaded_capture || exp.capture_match_o; 
+ 
         end
     
     endfunction
@@ -276,11 +291,11 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
         localparam int num_zeros_to_pad = (num_of_chunks * 32) - PD_WIDTH;
 
         int start_select = word_sel * 32;
-
         logic [(num_of_chunks * 32) - 1:0] eq_pd_padded;
+
         eq_pd_padded = {{num_zeros_to_pad{1'b0}}, eq_pd};
 
-        return eq_pd_padded[start_select +: 32];
+        select_32 = (start_select > PD_WIDTH)? 0 : eq_pd_padded[start_select +: 32];
 
     endfunction
 
@@ -311,7 +326,6 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
         if ((actual.cif2dbg_c_debug_pd_en_reg_2[2] == 1) && actual.eq_pd[113]) 
             capture_trigger2 = 1;
 
-
         if ((actual.cif2dbg_c_debug_pd_en_reg_1[1] == 1) && (actual.cif2dbg_c_debug_pd_en_reg_1[0] == 1)) begin 
             if (field1_matched1 || capture_trigger1) begin
                 if ((actual.cif2dbg_c_debug_pd_en_reg_1[3] == 1) || ((actual.cif2dbg_c_debug_pd_en_reg_1[3] == 0) && !field1_captured1)) begin
@@ -321,15 +335,15 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
             end
         end 
 
-        else if ((actual.cif2dbg_c_debug_pd_en_reg_2[1] == 1) && (actual.cif2dbg_c_debug_pd_en_reg_2[0] == 1)) begin 
+        if ((actual.cif2dbg_c_debug_pd_en_reg_2[1] == 1) && (actual.cif2dbg_c_debug_pd_en_reg_2[0] == 1)) begin 
             if (field1_matched2 || capture_trigger2) begin
                 if ((actual.cif2dbg_c_debug_pd_en_reg_2[3] == 1) || ((actual.cif2dbg_c_debug_pd_en_reg_2[3] == 0) && !field1_captured2)) begin
                     field1_captured2 = 1;
                     return 1;
                 end
             end
-        end 
-        else 
+        end
+
         return 0;
 
     endfunction
@@ -338,9 +352,7 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
     
     virtual function void report_phase (uvm_phase phase);
         super.report_phase(phase);
-        total_correct_count =  reset_correct_count +  counting_correct_count + capture_correct_count + cascade_correct_count;
 
-        total_error_count = reset_error_count + counting_error_count + capture_error_count + cascade_error_count;
                 
         `uvm_info("report_phase", $sformatf("reset successful transcations : %0d", reset_correct_count), UVM_MEDIUM);
         `uvm_info("report_phase", $sformatf("reset failed transcations : %0d", reset_error_count), UVM_MEDIUM);
@@ -351,12 +363,12 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
         `uvm_info("report_phase", $sformatf("capture successful transcations : %0d", capture_correct_count), UVM_MEDIUM);
         `uvm_info("report_phase", $sformatf("capture failed transcations : %0d", capture_error_count), UVM_MEDIUM);
 
+        `uvm_info("report_phase", $sformatf("capture first successful transcations : %0d", capture_first_correct_count), UVM_MEDIUM);
+        `uvm_info("report_phase", $sformatf("capture first failed transcations : %0d", capture_first_error_count), UVM_MEDIUM);
+
         `uvm_info("report_phase", $sformatf("cascading successful transcations : %0d", cascade_correct_count), UVM_MEDIUM);
         `uvm_info("report_phase", $sformatf("cascading failed transcations : %0d", cascade_error_count), UVM_MEDIUM);
 
-        //`uvm_info("report_phase", $sformatf("total successful transcations : %0d", total_correct_count), UVM_MEDIUM);
-
-        //`uvm_info("report_phase", $sformatf("total failed transcations : %0d", total_error_count), UVM_MEDIUM);
 
     endfunction
 

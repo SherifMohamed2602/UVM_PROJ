@@ -28,7 +28,7 @@ class pd_debug_driver extends uvm_driver #(pd_debug_seq_item);
 
             `uvm_info("run_phase", seq_item.convert2string(), UVM_LOW);
 
-            repeat(3)begin 
+            repeat(pd_debug_agt_cfg.driving_cycles)begin 
                 @(negedge PD_vif.clk);
             end
 
