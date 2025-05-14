@@ -6,7 +6,7 @@ class pd_debug_base_test extends uvm_test;
     pd_debug_config_agt pd_debug_agt_cfg;
 
 
-    function new(string name = "pd_debug_count_test", uvm_component parent = null);
+    function new(string name = "pd_debug_base_test", uvm_component parent = null);
             super.new(name, parent);
         endfunction 
 
@@ -17,6 +17,7 @@ class pd_debug_base_test extends uvm_test;
         pd_debug_agt_cfg = pd_debug_config_agt::type_id::create("pd_debug_agt_cfg");
         
         pd_debug_env_cfg.pd_debug_agt_cfg = pd_debug_agt_cfg;
+        pd_debug_agt_cfg.monitor_verbosity = UVM_LOW;
         pd_debug_agt_cfg.pd_debug_agent_state = UVM_ACTIVE;
 
 
@@ -30,5 +31,13 @@ class pd_debug_base_test extends uvm_test;
     virtual function void end_of_elaboration_phase(uvm_phase phase);
         uvm_top.print_topology(); 
     endfunction
+
+    virtual task run_phase(uvm_phase phase);
+        super.run_phase(phase);
+
+        phase.phase_done.set_drain_time(this, 10);
+
+    endtask
+
 
 endclass

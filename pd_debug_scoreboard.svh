@@ -6,7 +6,12 @@ class pd_debug_scoreboard extends uvm_scoreboard;
 
     pd_debug_seq_item seq_item;
 
-    int correct_count, error_count;
+    int reset_correct_count, reset_error_count;
+    int counting_correct_count, counting_error_count;
+    int capture_correct_count, capture_error_count;
+    int cascade_correct_count, cascade_error_count;
+    int total_correct_count, total_error_count;
+
 
     function new(string name = "pd_debug_scoreboard", uvm_component parent = null);
         super.new(name, parent);
@@ -21,7 +26,12 @@ class pd_debug_scoreboard extends uvm_scoreboard;
 
     virtual function void write(input pd_debug_seq_item t);
         
-        automatic bit mismatch = 0;
+        automatic bit reset_mismatch = 0;
+        automatic bit count_mismatch = 0;
+        automatic bit capture_mismatch = 0;
+        automatic bit cascade_mismatch = 0;
+
+
 
         pd_debug_seq_item exp;
         exp = pd_debug_seq_item::type_id::create("exp");
@@ -35,7 +45,10 @@ class pd_debug_scoreboard extends uvm_scoreboard;
             `uvm_error(get_type_name(), $sformatf("Comparison failed in field1 counters, Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b",
                 t.dbg2cif_e_debug_pd_field1_cnt_inc, t.dbg2cif_e_debug_pd_field1_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field1_cnt_inc,
                 exp.dbg2cif_e_debug_pd_field1_byte_cnt_inc))
-            mismatch = 1;
+            if (t.rstn)
+                count_mismatch = 1;
+            else 
+                reset_mismatch = 1;
         end
 
         if ((t.dbg2cif_e_debug_pd_field2_cnt_inc !== exp.dbg2cif_e_debug_pd_field2_cnt_inc) ||
@@ -44,7 +57,10 @@ class pd_debug_scoreboard extends uvm_scoreboard;
             `uvm_error(get_type_name(), $sformatf("Comparison failed in field2 counters, Recieved by the DUT _cnt_inc: %0b, _byte_cnt_inc: %0b, While the reference _cnt_inc: %0b, _byte_cnt_inc: %0b",
                 t.dbg2cif_e_debug_pd_field2_cnt_inc, t.dbg2cif_e_debug_pd_field2_byte_cnt_inc, exp.dbg2cif_e_debug_pd_field2_cnt_inc,
                 exp.dbg2cif_e_debug_pd_field2_byte_cnt_inc))
-            mismatch = 1;
+            if (t.rstn)
+                count_mismatch = 1;
+            else 
+                reset_mismatch = 1;
         end
 
 
@@ -52,14 +68,23 @@ class pd_debug_scoreboard extends uvm_scoreboard;
         begin
             `uvm_error(get_type_name(), $sformatf("Comparison failed in total counter, Recieved by the DUT total_pd_cnt_inc: %0b, While the reference: %0b",
                 t.dbg2cif_e_debug_pd_total_pd_cnt_inc, exp.dbg2cif_e_debug_pd_total_pd_cnt_inc))
-            mismatch = 1;
+                
+            if (t.rstn)
+                count_mismatch = 1;
+            else 
+                reset_mismatch = 1;
+
         end
 
         if (t.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount !== exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount)
         begin
             `uvm_error(get_type_name(), $sformatf("Comparison failed in total byte count increment amount, Recieved by the DUT: %0b, While the reference: %0b",
                 t.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount, exp.dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount))
-            mismatch = 1;
+            
+            if (t.rstn)
+                count_mismatch = 1;
+            else 
+                reset_mismatch = 1;            
         end
 
         if ((t.dbg2cif_e_debug_pd_capture_match_cnt_inc !== exp.dbg2cif_e_debug_pd_capture_match_cnt_inc) ||
@@ -70,7 +95,10 @@ class pd_debug_scoreboard extends uvm_scoreboard;
             `uvm_error(get_type_name(), $sformatf("Comparison failed in matching flags, Recieved by the DUT _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b,While the reference _capture_match_cnt_inc: %0b, _capture_match_field1: %0b, capture_match_field2: %0b, capture_match_o: %0b",
                          t.dbg2cif_e_debug_pd_capture_match_cnt_inc, t.dbg2cif_e_debug_pd_capture_match_field1, t.dbg2cif_e_debug_pd_capture_match_field2, t.capture_match_o,
                          exp.dbg2cif_e_debug_pd_capture_match_cnt_inc, exp.dbg2cif_e_debug_pd_capture_match_field1, exp.dbg2cif_e_debug_pd_capture_match_field2, exp.capture_match_o))
-            mismatch = 1;
+            if (t.rstn)
+                capture_mismatch = 1;
+            else 
+                reset_mismatch = 1;
         end
 
 
@@ -78,23 +106,58 @@ class pd_debug_scoreboard extends uvm_scoreboard;
         begin
             `uvm_error(get_type_name(), $sformatf("Comparison failed in captured pd_out, Recieved by the DUT: %0h, While the reference: %0h", 
                         t.dbg2cif_c_debug_pd_out, exp.dbg2cif_c_debug_pd_out))
-            mismatch = 1;
+            if (t.rstn)
+                capture_mismatch = 1;
+            else 
+                reset_mismatch = 1;
         end        
         
         if (t.eq_pd_out !== exp.eq_pd_out)
         begin
             `uvm_error(get_type_name(), $sformatf("Comparison failed in cascaded ep_pd, Recieved by the DUT: %0h, While the reference: %0h",
                         t.eq_pd_out, exp.eq_pd_out))
-            mismatch = 1;
+            if (t.rstn)
+                cascade_mismatch = 1;
+            else 
+                reset_mismatch = 1;
         end
 
-        if (mismatch)begin  
-            `uvm_error(get_type_name(), "Comparison failed")
-            error_count++;
-        end
-        else begin
-            `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
-            correct_count++;
+        if (~t.rstn) begin
+            if (reset_mismatch)begin  
+                `uvm_error(get_type_name(), "Comparison failed")
+                reset_error_count++;
+            end
+            else begin
+                `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
+                reset_correct_count++;
+            end
+        end else begin
+            if (count_mismatch)begin  
+                `uvm_error(get_type_name(), "Comparison failed")
+                counting_error_count++;
+            end
+            else begin
+                `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
+                counting_correct_count++;
+            end
+
+            if (capture_mismatch)begin  
+                `uvm_error(get_type_name(), "Comparison failed")
+                capture_error_count++;
+            end
+            else begin
+                `uvm_info(get_type_name(), "Correct outputs", UVM_LOW)
+                capture_correct_count++;
+            end
+
+            if (cascade_mismatch)begin  
+                `uvm_error(get_type_name(), "Comparison failed")
+                cascade_error_count++;
+            end
+            else begin
+                `uvm_info(get_type_name(), "Correct outputs", UVM_HIGH)
+                cascade_correct_count++;
+            end
         end
 
     endfunction
@@ -275,8 +338,26 @@ function automatic logic [31:0] select_32 (input logic [(PD_MUX_SEL_WIDTH-1):0] 
     
     virtual function void report_phase (uvm_phase phase);
         super.report_phase(phase);
-        `uvm_info("report_phase", $sformatf("total successful transcations : %0d", correct_count), UVM_MEDIUM);
-        `uvm_info("report_phase", $sformatf("total failed transcations : %0d", error_count), UVM_MEDIUM);
+        total_correct_count =  reset_correct_count +  counting_correct_count + capture_correct_count + cascade_correct_count;
+
+        total_error_count = reset_error_count + counting_error_count + capture_error_count + cascade_error_count;
+                
+        `uvm_info("report_phase", $sformatf("reset successful transcations : %0d", reset_correct_count), UVM_MEDIUM);
+        `uvm_info("report_phase", $sformatf("reset failed transcations : %0d", reset_error_count), UVM_MEDIUM);
+
+        `uvm_info("report_phase", $sformatf("counting successful transcations : %0d", counting_correct_count), UVM_MEDIUM);
+        `uvm_info("report_phase", $sformatf("counting failed transcations : %0d", counting_error_count), UVM_MEDIUM);
+
+        `uvm_info("report_phase", $sformatf("capture successful transcations : %0d", capture_correct_count), UVM_MEDIUM);
+        `uvm_info("report_phase", $sformatf("capture failed transcations : %0d", capture_error_count), UVM_MEDIUM);
+
+        `uvm_info("report_phase", $sformatf("cascading successful transcations : %0d", cascade_correct_count), UVM_MEDIUM);
+        `uvm_info("report_phase", $sformatf("cascading failed transcations : %0d", cascade_error_count), UVM_MEDIUM);
+
+        //`uvm_info("report_phase", $sformatf("total successful transcations : %0d", total_correct_count), UVM_MEDIUM);
+
+        //`uvm_info("report_phase", $sformatf("total failed transcations : %0d", total_error_count), UVM_MEDIUM);
+
     endfunction
 
 endclass 

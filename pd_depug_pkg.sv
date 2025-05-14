@@ -19,7 +19,7 @@ package pd_debug_pkg;
 typedef class pd_debug_seq_item;
 typedef class pd_debug_reset_sequence;
 typedef class pd_debug_count_sequence;
-//typedef class pd_debug_sequencer;
+typedef class pd_debug_capture_sequence;
 typedef class pd_debug_driver;
 typedef class pd_debug_monitor;
 typedef class pd_debug_agent;
@@ -28,6 +28,7 @@ typedef class pd_debug_env;
 typedef class pd_debug_scoreboard;
 typedef class pd_debug_base_test;
 typedef class pd_debug_count_test;
+typedef class pd_debug_capture_test;
 typedef class pd_debug_config_env;
 typedef class pd_debug_config_agt;
 
@@ -41,14 +42,15 @@ typedef class pd_debug_config_agt;
 `include "pd_debug_agent.svh"
 `include "pd_debug_driver.svh"
 `include "pd_debug_monitor.svh"
-//`include "pd_debug_sequencer.svh"
 `include "pd_debug_coverage.svh"
 `include "pd_debug_scoreboard.svh"
 `include "pd_debug_seq_item.svh"
 `include "pd_debug_reset_sequence.svh"
 `include "pd_debug_count_sequence.svh"
+`include "pd_debug_capture_sequence.svh"
 `include "pd_debug_count_test.svh"
 `include "pd_debug_base_test.svh"
+`include "pd_debug_capture_test.svh"
 
 
 

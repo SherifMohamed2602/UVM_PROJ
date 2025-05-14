@@ -32,8 +32,8 @@ class pd_debug_monitor extends uvm_monitor;
             end
             PD_vif.get(seq_item);
 
-            `uvm_info("run_phase", seq_item.convert2string_in3(), UVM_LOW);
-            `uvm_info("run_phase", seq_item.convert2string_out(), UVM_LOW);
+            `uvm_info("INPUTS", seq_item.convert2string_in(), pd_debug_agt_cfg.monitor_verbosity);
+            `uvm_info("OUTPUTS", seq_item.convert2string_out(), pd_debug_agt_cfg.monitor_verbosity);
 
 
             mon_ap.write(seq_item);

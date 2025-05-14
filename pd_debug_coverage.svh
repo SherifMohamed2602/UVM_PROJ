@@ -11,14 +11,20 @@ class pd_debug_coverage extends uvm_subscriber #(pd_debug_seq_item);
 
         reset_cv : coverpoint seq_item.rstn;
 
-        count_seq_cv   : coverpoint seq_item.e_valid iff (seq_item.rstn);
+        count_seq_cv : coverpoint seq_item.e_valid iff (seq_item.rstn);
 
-        count_en1   : coverpoint seq_item.cif2dbg_c_debug_pd_en_reg_1[0] iff (seq_item.rstn);
+        count_en : coverpoint (seq_item.cif2dbg_c_debug_pd_en_reg_1[0] && seq_item.e_valid)  iff (seq_item.rstn);
+
+        match_field1 : coverpoint ((seq_item.mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray_3 & seq_item.mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_3) == (seq_item.eq_pd & seq_item.mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray_3))  iff (seq_item.rstn);
+
+        match_field2 : coverpoint ((seq_item.mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_3 & seq_item.mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray_3) == (seq_item.eq_pd & seq_item.mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray_3))  iff (seq_item.rstn);
+
+        count_field1 : cross count_en, match_field1;
+
+        count_field2 : cross count_en, match_field2;
 
 
-        // count_seq_cv   : coverpoint seq_item. iff (seq_item.rstn){
-        //     bins   =;
-        // }
+
 
 
     endgroup
@@ -28,26 +34,6 @@ class pd_debug_coverage extends uvm_subscriber #(pd_debug_seq_item);
         pd_debug_cvg = new();
     endfunction
 
-
-    // virtual function void build_phase(uvm_phase phase);
-    //     super.build_phase(phase);
-    //     cov_export = new("cov_export", this);
-    //     cov_fifo = new("cov_fifo", this);
-    // endfunction 
-
-    // virtual function void connect_phase(uvm_phase phase);
-    //     super.connect_phase(phase);
-    //     cov_export.connect(cov_fifo.analysis_export);
-    // endfunction
-
-    // virtual task run_phase(uvm_phase phase);
-    //     super.run_phase(phase);
-
-    //     forever begin
-    //         cov_fifo.get(seq_item);
-    //         pd_debug_cvg.sample();
-    //     end
-    // endtask
 
 
     virtual function void write(input pd_debug_seq_item t);
