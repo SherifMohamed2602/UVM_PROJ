@@ -18,7 +18,7 @@ module control_pd_debug_with_capture_v3 #(
   input [PD_WIDTH-1:0] 		      mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray,
   input [3:0] 			            cif2dbg_c_debug_pd_en_reg, // Configurations
   input 			                  capture_trigger, // Designer can use this bit to perform arbitrary captures to field1
-  input [PD_MUX_SEL_WIDTH-1:0] 	cif2dbg_c_debug_pd_captured_word_sel, // Word select for dbg2cif_c_debug_pd_out
+  input [PD_MUX_SEL_WIDTH:0] 	cif2dbg_c_debug_pd_captured_word_sel, // Word select for dbg2cif_c_debug_pd_out
   output logic 			         dbg2cif_e_debug_pd_field1_cnt_inc, // Match on field1
   output logic 			         dbg2cif_e_debug_pd_field2_cnt_inc, // Match on field2
   output logic 			         dbg2cif_e_debug_pd_capture_match_cnt_inc, // capture_trigger found
@@ -131,7 +131,7 @@ module control_pd_debug_with_capture_v3 #(
       // Inputs
       .clk          (clk),      // Templated
       .in_data_bus  (dbg2cif_c_debug_pd_in_field1), // Templated
-      .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH-1:1])
+      .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH:1])
       );
 
    always_ff @(posedge clk) begin
@@ -175,7 +175,7 @@ module control_pd_debug_with_capture_v3 #(
       // Inputs
       .clk          (clk),      // Templated
       .in_data_bus  (dbg2cif_c_debug_pd_in_field2), // Templated
-      .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH-1:1])
+      .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH:1])
       );
    
    assign dbg2cif_c_debug_pd_out = dbg2cif_c_debug_pd_out_field1;

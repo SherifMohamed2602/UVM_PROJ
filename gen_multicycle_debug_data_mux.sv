@@ -34,7 +34,7 @@ module gen_multicycle_debug_data_mux (/*AUTOARG*/
    //Outgoing data bus
    output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
 
-   wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+   //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
    wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
    wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
    wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;

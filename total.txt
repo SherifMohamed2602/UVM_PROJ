@@ -43,7 +43,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -56,7 +56,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     47                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_after_or[DATA_SEL_OPTIONS-1:0];
     48                                                  
     49                                                  //Created to avoid Lints
-    50              1                         23        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
+    50              1                         29        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
     51                                               
     52                                                  genvar 					      i,j;
     53                                                  generate
@@ -67,15 +67,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     58                                                   		if (LAST_DATA_WIDTH == 0) 
     59                                               	    	  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = in_data_bus_padded[(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES+j)*OUT_DATA_BUS_WIDTH+:OUT_DATA_BUS_WIDTH];	
     60                                               		else
-    61     1 (GI=0,6)                         23     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
+    61     1 (GI=0,6)                         29     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
     62                                               																    {{(OUT_DATA_BUS_WIDTH-LAST_DATA_WIDTH){1'b0}},in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:LAST_DATA_WIDTH]} :
     63                                               																    in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:OUT_DATA_BUS_WIDTH];	     						
     64                                               	     end
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        262        always @(posedge clk) begin
-    69              1                        262           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        294        always @(posedge clk) begin
+    69              1                        294           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -85,35 +85,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        152     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        152     
-    79       1 (GI=2)                        152     
-    79       1 (GI=3)                        152     
-    79       1 (GI=4)                        152     
-    79       1 (GI=5)                        152     
-    79       1 (GI=6)                        156     
+    79       1 (GI=0)                        174     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        174     
+    79       1 (GI=2)                        174     
+    79       1 (GI=3)                        174     
+    79       1 (GI=4)                        174     
+    79       1 (GI=5)                        174     
+    79       1 (GI=6)                        178     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                         79     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        112     
-    83       1 (GI=3)                        144     
-    83       1 (GI=4)                        168     
-    83       1 (GI=5)                        195     
-    83       1 (GI=6)                        225     
+    83       1 (GI=1)                         83     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        121     
+    83       1 (GI=3)                        156     
+    83       1 (GI=4)                        196     
+    83       1 (GI=5)                        229     
+    83       1 (GI=6)                        257     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        231        always @(posedge clk) 
+    88              1                        265        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        231             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        265             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214       150        64    70.09%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -124,15 +124,14 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captured_
                                                clk           4           4      100.00 
           gen_debug_muxed_data_to_multicycle[0-31]           3           3      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-6]           4           4      100.00 
                                 out_data_bus[0-31]           3           3      100.00 
 
-Total Node Count     =        107 
+Total Node Count     =         75 
 Toggled Node Count   =         75 
-Untoggled Node Count =         32 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      70.09% (150 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captured_pd_field2
@@ -177,7 +176,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -190,7 +189,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     47                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_after_or[DATA_SEL_OPTIONS-1:0];
     48                                                  
     49                                                  //Created to avoid Lints
-    50              1                          4        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
+    50              1                          8        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
     51                                               
     52                                                  genvar 					      i,j;
     53                                                  generate
@@ -201,15 +200,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     58                                                   		if (LAST_DATA_WIDTH == 0) 
     59                                               	    	  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = in_data_bus_padded[(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES+j)*OUT_DATA_BUS_WIDTH+:OUT_DATA_BUS_WIDTH];	
     60                                               		else
-    61     1 (GI=0,6)                          4     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
+    61     1 (GI=0,6)                          8     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
     62                                               																    {{(OUT_DATA_BUS_WIDTH-LAST_DATA_WIDTH){1'b0}},in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:LAST_DATA_WIDTH]} :
     63                                               																    in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:OUT_DATA_BUS_WIDTH];	     						
     64                                               	     end
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        262        always @(posedge clk) begin
-    69              1                        262           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        294        always @(posedge clk) begin
+    69              1                        294           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -219,35 +218,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        133     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        133     
-    79       1 (GI=2)                        133     
-    79       1 (GI=3)                        133     
-    79       1 (GI=4)                        133     
-    79       1 (GI=5)                        133     
-    79       1 (GI=6)                        137     
+    79       1 (GI=0)                        153     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        153     
+    79       1 (GI=2)                        153     
+    79       1 (GI=3)                        153     
+    79       1 (GI=4)                        153     
+    79       1 (GI=5)                        153     
+    79       1 (GI=6)                        157     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                         74     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        100     
-    83       1 (GI=3)                        125     
-    83       1 (GI=4)                        134     
-    83       1 (GI=5)                        150     
-    83       1 (GI=6)                        163     
+    83       1 (GI=1)                         79     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        110     
+    83       1 (GI=3)                        139     
+    83       1 (GI=4)                        160     
+    83       1 (GI=5)                        180     
+    83       1 (GI=6)                        195     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        155        always @(posedge clk) 
+    88              1                        194        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        155             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        194             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214        22       192    10.28%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -256,17 +255,16 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_1/gen_multicycle_captured_
                                               Node      1H->0L      0L->1H  "Coverage"
                                               ---------------------------------------
                                                clk           4           4      100.00 
-          gen_debug_muxed_data_to_multicycle[0-31]           0           0        0.00 
+          gen_debug_muxed_data_to_multicycle[0-31]           1           1      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-6]           4           4      100.00 
-                                out_data_bus[0-31]           0           0        0.00 
+                                out_data_bus[0-31]           1           1      100.00 
 
-Total Node Count     =        107 
-Toggled Node Count   =         11 
-Untoggled Node Count =         96 
+Total Node Count     =         75 
+Toggled Node Count   =         75 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      10.28% (22 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_1
@@ -275,7 +273,7 @@ Toggle Coverage      =      10.28% (22 of 214 bins)
 Branch Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Branches                        16        14         2    87.50%
+    Branches                        16        16         0   100.00%
 
 ================================Branch Details================================
 
@@ -283,66 +281,66 @@ Branch Coverage for instance /TOP/pd_debug_u/pd_debug_1
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ------------------------------------IF Branch------------------------------------
-    81                                        98     Count coming in to IF
+    81                                        92     Count coming in to IF
     81              1                         34        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    82              1                         64                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              1                         58                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    82                                        63     Count coming in to IF
-    82              2                         21                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
-    82              3                         42                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82                                        57     Count coming in to IF
+    82              2                         18                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              3                         39                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    84                                        61     Count coming in to IF
+    84                                        70     Count coming in to IF
     84              1                         31        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    85              1                         30                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              1                         39                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    85                                        29     Count coming in to IF
-    85              2                    ***0***                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
-    85              3                         29                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
-Branch totals: 1 hit of 2 branches = 50.00%
+    85                                        38     Count coming in to IF
+    85              2                          5                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              3                         33                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    94                                        36     Count coming in to IF
-    94              1                          6           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    94                                        37     Count coming in to IF
+    94              1                          7           if (!rstn) pd_capture_q_field1 <= 1'b0;
     95              1                         30           else       pd_capture_q_field1 <= pd_capture_field1;
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    100                                      178     Count coming in to IF
-    100             1                         37           if (pd_capture_event_field1) begin
-                                             141     All False Count
+    100                                      204     Count coming in to IF
+    100             1                         49           if (pd_capture_event_field1) begin
+                                             155     All False Count
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    138                                       16     Count coming in to IF
-    138             1                          6           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                         10           else       pd_capture_q_field2 <= pd_capture_field2;
+    138                                       20     Count coming in to IF
+    138             1                          7           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         13           else       pd_capture_q_field2 <= pd_capture_field2;
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    144                                      159     Count coming in to IF
-    144             1                    ***0***           if (pd_capture_event_field2) begin
-                                             159     All False Count
-Branch totals: 1 hit of 2 branches = 50.00%
+    144                                      183     Count coming in to IF
+    144             1                          8           if (pd_capture_event_field2) begin
+                                             175     All False Count
+Branch totals: 2 hits of 2 branches = 100.00%
 
 
 Expression Coverage:
     Enabled Coverage              Bins   Covered    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Expressions                     31        20        11    64.51%
+    Expressions                     31        29         2    93.54%
 
 ================================Expression Details================================
 
 Expression Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ----------------Focused Expression View-----------------
 Line       64 Item    1  (e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray)))
 Expression totals: 2 of 2 input terms covered = 100.00%
@@ -361,19 +359,19 @@ Expression totals: 2 of 2 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       65 Item    1  (e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray)))
-Expression totals: 0 of 2 input terms covered = 0.00%
+Expression totals: 2 of 2 input terms covered = 100.00%
 
                                                                                                                                                            Input Term   Covered  Reason for no coverage   Hint
                                                                                                                                                           -----------  --------  -----------------------  --------------
-                                                                                                                                                              e_valid         N  '_1' not hit             Hit '_1'
-  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))         N  '_1' not hit             Hit '_1'
+                                                                                                                                                              e_valid         Y
+  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))         Y
 
      Rows:       Hits  FEC Target                                                                                                                                                             Non-masking condition(s)      
  ---------  ---------  --------------------                                                                                                                                                   -------------------------     
   Row   1:          4  e_valid_0                                                                                                                                                              -                             
-  Row   2:    ***0***  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
+  Row   2:          1  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
   Row   3:          4  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_0  e_valid                       
-  Row   4:    ***0***  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
+  Row   4:          1  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
 
 ----------------Focused Expression View-----------------
 Line       67 Item    1  ((e_valid && capture_match_field1) && cif2dbg_c_debug_pd_en)
@@ -396,22 +394,22 @@ Expression totals: 2 of 3 input terms covered = 66.66%
 
 ----------------Focused Expression View-----------------
 Line       68 Item    1  ((e_valid && capture_match_field2) && cif2dbg_c_debug_pd_en)
-Expression totals: 0 of 3 input terms covered = 0.00%
+Expression totals: 2 of 3 input terms covered = 66.66%
 
              Input Term   Covered  Reason for no coverage   Hint
             -----------  --------  -----------------------  --------------
-                e_valid         N  '_1' not hit             Hit '_1'
-   capture_match_field2         N  '_1' not hit             Hit '_1'
-  cif2dbg_c_debug_pd_en         N  No hits                  Hit '_0' and '_1'
+                e_valid         Y
+   capture_match_field2         Y
+  cif2dbg_c_debug_pd_en         N  '_0' not hit             Hit '_0'
 
      Rows:       Hits  FEC Target               Non-masking condition(s)      
  ---------  ---------  --------------------     -------------------------     
   Row   1:          4  e_valid_0                -                             
-  Row   2:    ***0***  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
+  Row   2:          1  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
   Row   3:          4  capture_match_field2_0   e_valid                       
-  Row   4:    ***0***  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
+  Row   4:          1  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
   Row   5:    ***0***  cif2dbg_c_debug_pd_en_0  (e_valid && capture_match_field2)
-  Row   6:    ***0***  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
+  Row   6:          1  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
 
 ----------------Focused Expression View-----------------
 Line       70 Item    1  (e_valid & cif2dbg_c_debug_pd_en)
@@ -462,19 +460,19 @@ Expression totals: 7 of 7 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       78 Item    1  (cif2dbg_c_debug_pd_capture_en && dbg2cif_e_debug_pd_field2_cnt_inc)
-Expression totals: 0 of 2 input terms covered = 0.00%
+Expression totals: 2 of 2 input terms covered = 100.00%
 
                          Input Term   Covered  Reason for no coverage   Hint
                         -----------  --------  -----------------------  --------------
-      cif2dbg_c_debug_pd_capture_en         N  '_1' not hit             Hit '_1'
-  dbg2cif_e_debug_pd_field2_cnt_inc         N  '_1' not hit             Hit '_1'
+      cif2dbg_c_debug_pd_capture_en         Y
+  dbg2cif_e_debug_pd_field2_cnt_inc         Y
 
      Rows:       Hits  FEC Target                           Non-masking condition(s)      
  ---------  ---------  --------------------                 -------------------------     
   Row   1:          4  cif2dbg_c_debug_pd_capture_en_0      -                             
-  Row   2:    ***0***  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
+  Row   2:          1  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
   Row   3:          4  dbg2cif_e_debug_pd_field2_cnt_inc_0  cif2dbg_c_debug_pd_capture_en 
-  Row   4:    ***0***  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
+  Row   4:          1  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
 
 ----------------Focused Expression View-----------------
 Line       81 Item    1  (~cif2dbg_c_debug_pd_capture_en? 1'b0: (pd_capture_event_field1? 1'b1: pd_capture_q_field1))
@@ -497,22 +495,22 @@ Expression totals: 3 of 3 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       84 Item    1  (~cif2dbg_c_debug_pd_capture_en? 1'b0: (pd_capture_event_field2? 1'b1: pd_capture_q_field2))
-Expression totals: 0 of 3 input terms covered = 0.00%
+Expression totals: 3 of 3 input terms covered = 100.00%
 
                      Input Term   Covered  Reason for no coverage   Hint
                     -----------  --------  -----------------------  --------------
-  cif2dbg_c_debug_pd_capture_en         N  '_1' not hit             Hit '_1'
-        pd_capture_event_field2         N  '_1' not hit             Hit '_1'
-            pd_capture_q_field2         N  '_1' not hit             Hit '_1'
+  cif2dbg_c_debug_pd_capture_en         Y
+        pd_capture_event_field2         Y
+            pd_capture_q_field2         Y
 
      Rows:       Hits  FEC Target                       Non-masking condition(s)      
  ---------  ---------  --------------------             -------------------------     
   Row   1:          4  cif2dbg_c_debug_pd_capture_en_0  -                             
-  Row   2:    ***0***  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
+  Row   2:          1  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
   Row   3:          4  pd_capture_event_field2_0        (cif2dbg_c_debug_pd_capture_en && ~pd_capture_q_field2)
-  Row   4:    ***0***  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
+  Row   4:          1  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
   Row   5:          4  pd_capture_q_field2_0            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
-  Row   6:    ***0***  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
+  Row   6:          1  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
 
 ----------------Focused Expression View-----------------
 Line       89 Item    1  (((e_valid && capture_trigger) && cif2dbg_c_debug_pd_en_trigger_match) && cif2dbg_c_debug_pd_en)
@@ -540,7 +538,7 @@ Expression totals: 4 of 4 input terms covered = 100.00%
 Statement Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Statements                      27        26         1    96.29%
+    Statements                      27        27         0   100.00%
 
 ================================Statement Details================================
 
@@ -548,7 +546,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
     1                                                module control_pd_debug_with_capture_v3 #(
     2                                                
     3                                                  parameter PD_WIDTH = 100, // Width of incoming PD
@@ -612,44 +610,44 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
     61                                                  assign cif2dbg_c_debug_pd_en_trigger_match = cif2dbg_c_debug_pd_en_reg[2]; 
     62                                                  assign cif2dbg_c_debug_pd_capture_last_en = cif2dbg_c_debug_pd_en_reg[3]; 
     63                                                  
-    64              1                        314        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
-    65              1                        314        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
+    64              1                        354        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
+    65              1                        354        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
     66                                                  
-    67              1                         89        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
-    68              1                         83        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
+    67              1                         91        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
+    68              1                         93        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
     69                                                  
-    70              1                         81        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
+    70              1                         83        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
     71                                                  assign dbg2cif_e_debug_pd_field1_byte_cnt_inc = dbg2cif_e_debug_pd_field1_cnt_inc;
     72                                                  assign dbg2cif_e_debug_pd_field2_byte_cnt_inc = dbg2cif_e_debug_pd_field2_cnt_inc;
-    73              1                        159        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
+    73              1                        179        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
     74                                                  
-    75              1                        190        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
+    75              1                        186        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
     76                                               				    (dbg2cif_e_debug_pd_field1_cnt_inc || (capture_trigger && e_valid && cif2dbg_c_debug_pd_en_trigger_match)) && 
     77                                               				    (!pd_capture_q_field1 || cif2dbg_c_debug_pd_capture_last_en);
-    78              1                         61        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
+    78              1                         69        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
     79                                               				    dbg2cif_e_debug_pd_field2_cnt_inc ;
     80                                                  
-    81              1                        102        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    81              1                         96        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     82                                                                             pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
     83                                               
-    84              1                         65        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    84              1                         74        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     85                                                                             pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
     86                                               
     87                                                  assign dbg2cif_e_debug_pd_capture_match_field1 = pd_capture_event_field1;
     88                                                  assign dbg2cif_e_debug_pd_capture_match_field2 = pd_capture_event_field2;
-    89              1                        164        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
+    89              1                        160        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
     90                                               
     91                                                  assign capture_match_o = pd_capture_event_field1;
     92                                               
-    93              1                         36        always_ff @(posedge clk) begin
-    94              1                          6           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    93              1                         37        always_ff @(posedge clk) begin
+    94              1                          7           if (!rstn) pd_capture_q_field1 <= 1'b0;
     95              1                         30           else       pd_capture_q_field1 <= pd_capture_field1;
     96                                                  end
     97                                               
-    98              1                        178        always_comb begin
-    99              1                        178           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
+    98              1                        204        always_comb begin
+    99              1                        204           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
     100                                                    if (pd_capture_event_field1) begin
-    101             1                         37     	 dbg2cif_c_debug_pd_in_field1_nxt = eq_pd;
+    101             1                         49     	 dbg2cif_c_debug_pd_in_field1_nxt = eq_pd;
     102                                                    end
     103                                                 end
     104                                                 
@@ -663,8 +661,8 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
     112                                              	    .data_out (dbg2cif_c_debug_pd_in_field1), .*);
     113                                                    end
     114                                                    else begin
-    115             1                         42     	 always_ff @ (posedge clk) begin    
-    116             1                         42     	    dbg2cif_c_debug_pd_in_field1 <= dbg2cif_c_debug_pd_in_field1_nxt;
+    115             1                         54     	 always_ff @ (posedge clk) begin    
+    116             1                         54     	    dbg2cif_c_debug_pd_in_field1 <= dbg2cif_c_debug_pd_in_field1_nxt;
     117                                              	 end
     118                                                    end
     119                                                 endgenerate
@@ -685,15 +683,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
     134                                                    .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH:1])
     135                                                    );
     136                                              
-    137             1                         16        always_ff @(posedge clk) begin
-    138             1                          6           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                         10           else       pd_capture_q_field2 <= pd_capture_field2;
+    137             1                         20        always_ff @(posedge clk) begin
+    138             1                          7           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         13           else       pd_capture_q_field2 <= pd_capture_field2;
     140                                                 end
     141                                              
-    142             1                        159        always_comb begin
-    143             1                        159           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
+    142             1                        183        always_comb begin
+    143             1                        183           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
     144                                                    if (pd_capture_event_field2) begin
-    145             1                    ***0***     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
+    145             1                          8     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
     146                                                    end
     147                                                 end
     148                                                 
@@ -707,13 +705,13 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
     156                                              	    .data_out (dbg2cif_c_debug_pd_in_field2), .*);
     157                                                    end
     158                                                    else begin
-    159             1                          4     	 always_ff @ (posedge clk) begin    
-    160             1                          4     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
+    159             1                         12     	 always_ff @ (posedge clk) begin    
+    160             1                         12     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        458       205       253    44.75%
+    Toggles                        458       282       176    61.57%
 
 ================================Toggle Details================================
 
@@ -723,7 +721,7 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
                                               ---------------------------------------
                            CFG_anchor_clk_override           0           0        0.00 
                               capture_match_field1           1           1      100.00 
-                              capture_match_field2           0           0        0.00 
+                              capture_match_field2           1           1      100.00 
                                    capture_match_o           3           3      100.00 
                                    capture_trigger           4           4      100.00 
                      cif2dbg_c_debug_pd_capture_en           3           4      100.00 
@@ -738,33 +736,33 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_1 --
                                                clk           4           4      100.00 
                       dbg2cif_c_debug_pd_out[0-31]           3           3      100.00 
                dbg2cif_c_debug_pd_out_field1[0-31]           3           3      100.00 
-               dbg2cif_c_debug_pd_out_field2[0-31]           0           0        0.00 
+               dbg2cif_c_debug_pd_out_field2[0-31]           1           1      100.00 
           dbg2cif_e_debug_pd_capture_match_cnt_inc           4           4      100.00 
            dbg2cif_e_debug_pd_capture_match_field1           3           3      100.00 
-           dbg2cif_e_debug_pd_capture_match_field2           0           0        0.00 
+           dbg2cif_e_debug_pd_capture_match_field2           1           1      100.00 
             dbg2cif_e_debug_pd_field1_byte_cnt_inc           1           1      100.00 
                  dbg2cif_e_debug_pd_field1_cnt_inc           1           1      100.00 
-            dbg2cif_e_debug_pd_field2_byte_cnt_inc           0           0        0.00 
-                 dbg2cif_e_debug_pd_field2_cnt_inc           0           0        0.00 
-               dbg2cif_e_debug_pd_total_pd_cnt_inc           3           4      100.00 
+            dbg2cif_e_debug_pd_field2_byte_cnt_inc           1           1      100.00 
+                 dbg2cif_e_debug_pd_field2_cnt_inc           1           1      100.00 
+               dbg2cif_e_debug_pd_total_pd_cnt_inc           4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount[0-11] 
                                                              4           4      100.00 
-                                           e_valid           3           4      100.00 
+                                           e_valid           4           4      100.00 
                                         eq_pd[113]           4           4      100.00 
                                     eq_pd[114-199]           0           0        0.00 
                            pd_capture_event_field1           3           3      100.00 
-                           pd_capture_event_field2           0           0        0.00 
+                           pd_capture_event_field2           1           1      100.00 
                                  pd_capture_field1           2           3      100.00 
-                                 pd_capture_field2           0           0        0.00 
+                                 pd_capture_field2           0           1       50.00 
                                pd_capture_q_field1           2           3      100.00 
-                               pd_capture_q_field2           0           0        0.00 
-                                              rstn           0           3       50.00 
+                               pd_capture_q_field2           0           1       50.00 
+                                              rstn           1           3      100.00 
 
 Total Node Count     =        229 
-Toggled Node Count   =        102 
-Untoggled Node Count =        127 
+Toggled Node Count   =        140 
+Untoggled Node Count =         89 
 
-Toggle Coverage      =      44.75% (205 of 458 bins)
+Toggle Coverage      =      61.57% (282 of 458 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captured_pd_field1
@@ -809,7 +807,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -822,7 +820,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     47                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_after_or[DATA_SEL_OPTIONS-1:0];
     48                                                  
     49                                                  //Created to avoid Lints
-    50              1                         51        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
+    50              1                         50        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
     51                                               
     52                                                  genvar 					      i,j;
     53                                                  generate
@@ -833,15 +831,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     58                                                   		if (LAST_DATA_WIDTH == 0) 
     59                                               	    	  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = in_data_bus_padded[(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES+j)*OUT_DATA_BUS_WIDTH+:OUT_DATA_BUS_WIDTH];	
     60                                               		else
-    61     1 (GI=0,6)                         51     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
+    61     1 (GI=0,6)                         50     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
     62                                               																    {{(OUT_DATA_BUS_WIDTH-LAST_DATA_WIDTH){1'b0}},in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:LAST_DATA_WIDTH]} :
     63                                               																    in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:OUT_DATA_BUS_WIDTH];	     						
     64                                               	     end
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        280        always @(posedge clk) begin
-    69              1                        280           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        318        always @(posedge clk) begin
+    69              1                        318           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -851,35 +849,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        189     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        189     
-    79       1 (GI=2)                        189     
-    79       1 (GI=3)                        189     
-    79       1 (GI=4)                        189     
-    79       1 (GI=5)                        189     
-    79       1 (GI=6)                        193     
+    79       1 (GI=0)                        207     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        207     
+    79       1 (GI=2)                        207     
+    79       1 (GI=3)                        207     
+    79       1 (GI=4)                        207     
+    79       1 (GI=5)                        207     
+    79       1 (GI=6)                        211     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                        100     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        143     
-    83       1 (GI=3)                        176     
-    83       1 (GI=4)                        207     
-    83       1 (GI=5)                        250     
-    83       1 (GI=6)                        281     
+    83       1 (GI=1)                        102     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        152     
+    83       1 (GI=3)                        191     
+    83       1 (GI=4)                        225     
+    83       1 (GI=5)                        271     
+    83       1 (GI=6)                        316     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        300        always @(posedge clk) 
+    88              1                        337        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        300             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        337             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214       150        64    70.09%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -890,17 +888,16 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captured_
                                                clk           4           4      100.00 
           gen_debug_muxed_data_to_multicycle[0-31]           4           4      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-3]           4           4      100.00 
                         one_hot_select_vector_r[4]           3           3      100.00 
                       one_hot_select_vector_r[5-6]           4           4      100.00 
                                 out_data_bus[0-31]           4           4      100.00 
 
-Total Node Count     =        107 
+Total Node Count     =         75 
 Toggled Node Count   =         75 
-Untoggled Node Count =         32 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      70.09% (150 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captured_pd_field2
@@ -945,7 +942,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -958,7 +955,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     47                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_after_or[DATA_SEL_OPTIONS-1:0];
     48                                                  
     49                                                  //Created to avoid Lints
-    50              1                          4        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
+    50              1                         13        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
     51                                               
     52                                                  genvar 					      i,j;
     53                                                  generate
@@ -969,15 +966,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     58                                                   		if (LAST_DATA_WIDTH == 0) 
     59                                               	    	  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = in_data_bus_padded[(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES+j)*OUT_DATA_BUS_WIDTH+:OUT_DATA_BUS_WIDTH];	
     60                                               		else
-    61     1 (GI=0,6)                          4     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
+    61     1 (GI=0,6)                         13     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
     62                                               																    {{(OUT_DATA_BUS_WIDTH-LAST_DATA_WIDTH){1'b0}},in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:LAST_DATA_WIDTH]} :
     63                                               																    in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:OUT_DATA_BUS_WIDTH];	     						
     64                                               	     end
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        280        always @(posedge clk) begin
-    69              1                        280           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        318        always @(posedge clk) begin
+    69              1                        318           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -987,35 +984,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        142     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        142     
-    79       1 (GI=2)                        142     
-    79       1 (GI=3)                        142     
-    79       1 (GI=4)                        142     
-    79       1 (GI=5)                        142     
-    79       1 (GI=6)                        146     
+    79       1 (GI=0)                        170     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        170     
+    79       1 (GI=2)                        170     
+    79       1 (GI=3)                        170     
+    79       1 (GI=4)                        170     
+    79       1 (GI=5)                        170     
+    79       1 (GI=6)                        174     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                         85     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        119     
-    83       1 (GI=3)                        134     
-    83       1 (GI=4)                        140     
-    83       1 (GI=5)                        150     
-    83       1 (GI=6)                        157     
+    83       1 (GI=1)                         92     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        134     
+    83       1 (GI=3)                        156     
+    83       1 (GI=4)                        167     
+    83       1 (GI=5)                        185     
+    83       1 (GI=6)                        208     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        145        always @(posedge clk) 
+    88              1                        206        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        145             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        206             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214        22       192    10.28%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -1024,19 +1021,18 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_2/gen_multicycle_captured_
                                               Node      1H->0L      0L->1H  "Coverage"
                                               ---------------------------------------
                                                clk           4           4      100.00 
-          gen_debug_muxed_data_to_multicycle[0-31]           0           0        0.00 
+          gen_debug_muxed_data_to_multicycle[0-31]           1           1      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-3]           4           4      100.00 
                         one_hot_select_vector_r[4]           3           3      100.00 
                       one_hot_select_vector_r[5-6]           4           4      100.00 
-                                out_data_bus[0-31]           0           0        0.00 
+                                out_data_bus[0-31]           1           1      100.00 
 
-Total Node Count     =        107 
-Toggled Node Count   =         11 
-Untoggled Node Count =         96 
+Total Node Count     =         75 
+Toggled Node Count   =         75 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      10.28% (22 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_2
@@ -1045,7 +1041,7 @@ Toggle Coverage      =      10.28% (22 of 214 bins)
 Branch Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Branches                        16        14         2    87.50%
+    Branches                        16        16         0   100.00%
 
 ================================Branch Details================================
 
@@ -1053,66 +1049,66 @@ Branch Coverage for instance /TOP/pd_debug_u/pd_debug_2
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ------------------------------------IF Branch------------------------------------
-    81                                       138     Count coming in to IF
+    81                                       140     Count coming in to IF
     81              1                         52        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    82              1                         86                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              1                         88                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    82                                        86     Count coming in to IF
-    82              2                         37                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
-    82              3                         49                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82                                        88     Count coming in to IF
+    82              2                         38                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              3                         50                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    84                                        61     Count coming in to IF
+    84                                        80     Count coming in to IF
     84              1                         34        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    85              1                         27                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              1                         46                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    85                                        27     Count coming in to IF
-    85              2                    ***0***                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
-    85              3                         27                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
-Branch totals: 1 hit of 2 branches = 50.00%
-
-------------------------------------IF Branch------------------------------------
-    94                                        58     Count coming in to IF
-    94              1                          7           if (!rstn) pd_capture_q_field1 <= 1'b0;
-    95              1                         51           else       pd_capture_q_field1 <= pd_capture_field1;
+    85                                        46     Count coming in to IF
+    85              2                         10                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              3                         36                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    100                                      234     Count coming in to IF
-    100             1                         84           if (pd_capture_event_field1) begin
-                                             150     All False Count
+    94                                        60     Count coming in to IF
+    94              1                          8           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    95              1                         52           else       pd_capture_q_field1 <= pd_capture_field1;
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    138                                       15     Count coming in to IF
-    138             1                          6           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                          9           else       pd_capture_q_field2 <= pd_capture_field2;
+    100                                      254     Count coming in to IF
+    100             1                         82           if (pd_capture_event_field1) begin
+                                             172     All False Count
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    144                                      163     Count coming in to IF
-    144             1                    ***0***           if (pd_capture_event_field2) begin
-                                             163     All False Count
-Branch totals: 1 hit of 2 branches = 50.00%
+    138                                       19     Count coming in to IF
+    138             1                          7           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         12           else       pd_capture_q_field2 <= pd_capture_field2;
+Branch totals: 2 hits of 2 branches = 100.00%
+
+------------------------------------IF Branch------------------------------------
+    144                                      201     Count coming in to IF
+    144             1                         18           if (pd_capture_event_field2) begin
+                                             183     All False Count
+Branch totals: 2 hits of 2 branches = 100.00%
 
 
 Expression Coverage:
     Enabled Coverage              Bins   Covered    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Expressions                     31        20        11    64.51%
+    Expressions                     31        29         2    93.54%
 
 ================================Expression Details================================
 
 Expression Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ----------------Focused Expression View-----------------
 Line       64 Item    1  (e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray)))
 Expression totals: 2 of 2 input terms covered = 100.00%
@@ -1131,19 +1127,19 @@ Expression totals: 2 of 2 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       65 Item    1  (e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray)))
-Expression totals: 0 of 2 input terms covered = 0.00%
+Expression totals: 2 of 2 input terms covered = 100.00%
 
                                                                                                                                                            Input Term   Covered  Reason for no coverage   Hint
                                                                                                                                                           -----------  --------  -----------------------  --------------
-                                                                                                                                                              e_valid         N  '_1' not hit             Hit '_1'
-  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))         N  '_1' not hit             Hit '_1'
+                                                                                                                                                              e_valid         Y
+  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))         Y
 
      Rows:       Hits  FEC Target                                                                                                                                                             Non-masking condition(s)      
  ---------  ---------  --------------------                                                                                                                                                   -------------------------     
   Row   1:          4  e_valid_0                                                                                                                                                              -                             
-  Row   2:    ***0***  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
+  Row   2:          1  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
   Row   3:          4  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_0  e_valid                       
-  Row   4:    ***0***  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
+  Row   4:          1  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
 
 ----------------Focused Expression View-----------------
 Line       67 Item    1  ((e_valid && capture_match_field1) && cif2dbg_c_debug_pd_en)
@@ -1166,22 +1162,22 @@ Expression totals: 2 of 3 input terms covered = 66.66%
 
 ----------------Focused Expression View-----------------
 Line       68 Item    1  ((e_valid && capture_match_field2) && cif2dbg_c_debug_pd_en)
-Expression totals: 0 of 3 input terms covered = 0.00%
+Expression totals: 2 of 3 input terms covered = 66.66%
 
              Input Term   Covered  Reason for no coverage   Hint
             -----------  --------  -----------------------  --------------
-                e_valid         N  '_1' not hit             Hit '_1'
-   capture_match_field2         N  '_1' not hit             Hit '_1'
-  cif2dbg_c_debug_pd_en         N  No hits                  Hit '_0' and '_1'
+                e_valid         Y
+   capture_match_field2         Y
+  cif2dbg_c_debug_pd_en         N  '_0' not hit             Hit '_0'
 
      Rows:       Hits  FEC Target               Non-masking condition(s)      
  ---------  ---------  --------------------     -------------------------     
   Row   1:          4  e_valid_0                -                             
-  Row   2:    ***0***  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
+  Row   2:          1  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
   Row   3:          4  capture_match_field2_0   e_valid                       
-  Row   4:    ***0***  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
+  Row   4:          1  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
   Row   5:    ***0***  cif2dbg_c_debug_pd_en_0  (e_valid && capture_match_field2)
-  Row   6:    ***0***  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
+  Row   6:          1  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
 
 ----------------Focused Expression View-----------------
 Line       70 Item    1  (e_valid & cif2dbg_c_debug_pd_en)
@@ -1232,19 +1228,19 @@ Expression totals: 7 of 7 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       78 Item    1  (cif2dbg_c_debug_pd_capture_en && dbg2cif_e_debug_pd_field2_cnt_inc)
-Expression totals: 0 of 2 input terms covered = 0.00%
+Expression totals: 2 of 2 input terms covered = 100.00%
 
                          Input Term   Covered  Reason for no coverage   Hint
                         -----------  --------  -----------------------  --------------
-      cif2dbg_c_debug_pd_capture_en         N  '_1' not hit             Hit '_1'
-  dbg2cif_e_debug_pd_field2_cnt_inc         N  '_1' not hit             Hit '_1'
+      cif2dbg_c_debug_pd_capture_en         Y
+  dbg2cif_e_debug_pd_field2_cnt_inc         Y
 
      Rows:       Hits  FEC Target                           Non-masking condition(s)      
  ---------  ---------  --------------------                 -------------------------     
   Row   1:          4  cif2dbg_c_debug_pd_capture_en_0      -                             
-  Row   2:    ***0***  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
+  Row   2:          1  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
   Row   3:          4  dbg2cif_e_debug_pd_field2_cnt_inc_0  cif2dbg_c_debug_pd_capture_en 
-  Row   4:    ***0***  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
+  Row   4:          1  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
 
 ----------------Focused Expression View-----------------
 Line       81 Item    1  (~cif2dbg_c_debug_pd_capture_en? 1'b0: (pd_capture_event_field1? 1'b1: pd_capture_q_field1))
@@ -1267,22 +1263,22 @@ Expression totals: 3 of 3 input terms covered = 100.00%
 
 ----------------Focused Expression View-----------------
 Line       84 Item    1  (~cif2dbg_c_debug_pd_capture_en? 1'b0: (pd_capture_event_field2? 1'b1: pd_capture_q_field2))
-Expression totals: 0 of 3 input terms covered = 0.00%
+Expression totals: 3 of 3 input terms covered = 100.00%
 
                      Input Term   Covered  Reason for no coverage   Hint
                     -----------  --------  -----------------------  --------------
-  cif2dbg_c_debug_pd_capture_en         N  '_1' not hit             Hit '_1'
-        pd_capture_event_field2         N  '_1' not hit             Hit '_1'
-            pd_capture_q_field2         N  '_1' not hit             Hit '_1'
+  cif2dbg_c_debug_pd_capture_en         Y
+        pd_capture_event_field2         Y
+            pd_capture_q_field2         Y
 
      Rows:       Hits  FEC Target                       Non-masking condition(s)      
  ---------  ---------  --------------------             -------------------------     
   Row   1:          4  cif2dbg_c_debug_pd_capture_en_0  -                             
-  Row   2:    ***0***  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
+  Row   2:          1  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
   Row   3:          4  pd_capture_event_field2_0        (cif2dbg_c_debug_pd_capture_en && ~pd_capture_q_field2)
-  Row   4:    ***0***  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
+  Row   4:          1  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
   Row   5:          4  pd_capture_q_field2_0            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
-  Row   6:    ***0***  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
+  Row   6:          1  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
 
 ----------------Focused Expression View-----------------
 Line       89 Item    1  (((e_valid && capture_trigger) && cif2dbg_c_debug_pd_en_trigger_match) && cif2dbg_c_debug_pd_en)
@@ -1310,7 +1306,7 @@ Expression totals: 4 of 4 input terms covered = 100.00%
 Statement Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Statements                      27        26         1    96.29%
+    Statements                      27        27         0   100.00%
 
 ================================Statement Details================================
 
@@ -1318,7 +1314,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
     1                                                module control_pd_debug_with_capture_v3 #(
     2                                                
     3                                                  parameter PD_WIDTH = 100, // Width of incoming PD
@@ -1382,44 +1378,44 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
     61                                                  assign cif2dbg_c_debug_pd_en_trigger_match = cif2dbg_c_debug_pd_en_reg[2]; 
     62                                                  assign cif2dbg_c_debug_pd_capture_last_en = cif2dbg_c_debug_pd_en_reg[3]; 
     63                                                  
-    64              1                        346        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
-    65              1                        346        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
+    64              1                        388        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
+    65              1                        388        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
     66                                                  
-    67              1                        124        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
-    68              1                         98        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
+    67              1                        126        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
+    68              1                        118        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
     69                                                  
-    70              1                         96        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
+    70              1                         98        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
     71                                                  assign dbg2cif_e_debug_pd_field1_byte_cnt_inc = dbg2cif_e_debug_pd_field1_cnt_inc;
     72                                                  assign dbg2cif_e_debug_pd_field2_byte_cnt_inc = dbg2cif_e_debug_pd_field2_cnt_inc;
-    73              1                        159        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
+    73              1                        179        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
     74                                                  
-    75              1                        236        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
+    75              1                        240        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
     76                                               				    (dbg2cif_e_debug_pd_field1_cnt_inc || (capture_trigger && e_valid && cif2dbg_c_debug_pd_en_trigger_match)) && 
     77                                               				    (!pd_capture_q_field1 || cif2dbg_c_debug_pd_capture_last_en);
-    78              1                         63        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
+    78              1                         81        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
     79                                               				    dbg2cif_e_debug_pd_field2_cnt_inc ;
     80                                                  
-    81              1                        142        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    81              1                        144        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     82                                                                             pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
     83                                               
-    84              1                         65        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    84              1                         84        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     85                                                                             pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
     86                                               
     87                                                  assign dbg2cif_e_debug_pd_capture_match_field1 = pd_capture_event_field1;
     88                                                  assign dbg2cif_e_debug_pd_capture_match_field2 = pd_capture_event_field2;
-    89              1                        187        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
+    89              1                        191        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
     90                                               
     91                                                  assign capture_match_o = pd_capture_event_field1;
     92                                               
-    93              1                         58        always_ff @(posedge clk) begin
-    94              1                          7           if (!rstn) pd_capture_q_field1 <= 1'b0;
-    95              1                         51           else       pd_capture_q_field1 <= pd_capture_field1;
+    93              1                         60        always_ff @(posedge clk) begin
+    94              1                          8           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    95              1                         52           else       pd_capture_q_field1 <= pd_capture_field1;
     96                                                  end
     97                                               
-    98              1                        234        always_comb begin
-    99              1                        234           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
+    98              1                        254        always_comb begin
+    99              1                        254           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
     100                                                    if (pd_capture_event_field1) begin
-    101             1                         84     	 dbg2cif_c_debug_pd_in_field1_nxt = eq_pd;
+    101             1                         82     	 dbg2cif_c_debug_pd_in_field1_nxt = eq_pd;
     102                                                    end
     103                                                 end
     104                                                 
@@ -1433,8 +1429,8 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
     112                                              	    .data_out (dbg2cif_c_debug_pd_in_field1), .*);
     113                                                    end
     114                                                    else begin
-    115             1                         92     	 always_ff @ (posedge clk) begin    
-    116             1                         92     	    dbg2cif_c_debug_pd_in_field1 <= dbg2cif_c_debug_pd_in_field1_nxt;
+    115             1                         90     	 always_ff @ (posedge clk) begin    
+    116             1                         90     	    dbg2cif_c_debug_pd_in_field1 <= dbg2cif_c_debug_pd_in_field1_nxt;
     117                                              	 end
     118                                                    end
     119                                                 endgenerate
@@ -1455,15 +1451,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
     134                                                    .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH:1])
     135                                                    );
     136                                              
-    137             1                         15        always_ff @(posedge clk) begin
-    138             1                          6           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                          9           else       pd_capture_q_field2 <= pd_capture_field2;
+    137             1                         19        always_ff @(posedge clk) begin
+    138             1                          7           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         12           else       pd_capture_q_field2 <= pd_capture_field2;
     140                                                 end
     141                                              
-    142             1                        163        always_comb begin
-    143             1                        163           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
+    142             1                        201        always_comb begin
+    143             1                        201           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
     144                                                    if (pd_capture_event_field2) begin
-    145             1                    ***0***     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
+    145             1                         18     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
     146                                                    end
     147                                                 end
     148                                                 
@@ -1477,13 +1473,13 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
     156                                              	    .data_out (dbg2cif_c_debug_pd_in_field2), .*);
     157                                                    end
     158                                                    else begin
-    159             1                          4     	 always_ff @ (posedge clk) begin    
-    160             1                          4     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
+    159             1                         22     	 always_ff @ (posedge clk) begin    
+    160             1                         22     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        284       203        81    71.47%
+    Toggles                        284       280         4    98.59%
 
 ================================Toggle Details================================
 
@@ -1493,7 +1489,7 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
                                               ---------------------------------------
                            CFG_anchor_clk_override           0           0        0.00 
                               capture_match_field1           1           1      100.00 
-                              capture_match_field2           0           0        0.00 
+                              capture_match_field2           1           1      100.00 
                                    capture_match_o           4           4      100.00 
                                    capture_trigger           4           4      100.00 
                      cif2dbg_c_debug_pd_capture_en           3           4      100.00 
@@ -1507,31 +1503,31 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_2 --
                                                clk           4           4      100.00 
                       dbg2cif_c_debug_pd_out[0-31]           4           4      100.00 
                dbg2cif_c_debug_pd_out_field1[0-31]           4           4      100.00 
-               dbg2cif_c_debug_pd_out_field2[0-31]           0           0        0.00 
+               dbg2cif_c_debug_pd_out_field2[0-31]           1           1      100.00 
           dbg2cif_e_debug_pd_capture_match_cnt_inc           4           4      100.00 
            dbg2cif_e_debug_pd_capture_match_field1           4           4      100.00 
-           dbg2cif_e_debug_pd_capture_match_field2           0           0        0.00 
+           dbg2cif_e_debug_pd_capture_match_field2           1           1      100.00 
             dbg2cif_e_debug_pd_field1_byte_cnt_inc           1           1      100.00 
                  dbg2cif_e_debug_pd_field1_cnt_inc           1           1      100.00 
-            dbg2cif_e_debug_pd_field2_byte_cnt_inc           0           0        0.00 
-                 dbg2cif_e_debug_pd_field2_cnt_inc           0           0        0.00 
-               dbg2cif_e_debug_pd_total_pd_cnt_inc           3           4      100.00 
+            dbg2cif_e_debug_pd_field2_byte_cnt_inc           1           1      100.00 
+                 dbg2cif_e_debug_pd_field2_cnt_inc           1           1      100.00 
+               dbg2cif_e_debug_pd_total_pd_cnt_inc           4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount[0-11] 
                                                              4           4      100.00 
-                                           e_valid           3           4      100.00 
+                                           e_valid           4           4      100.00 
                            pd_capture_event_field1           4           4      100.00 
-                           pd_capture_event_field2           0           0        0.00 
+                           pd_capture_event_field2           1           1      100.00 
                                  pd_capture_field1           3           4      100.00 
-                                 pd_capture_field2           0           0        0.00 
+                                 pd_capture_field2           0           1       50.00 
                                pd_capture_q_field1           3           4      100.00 
-                               pd_capture_q_field2           0           0        0.00 
-                                              rstn           0           3       50.00 
+                               pd_capture_q_field2           0           1       50.00 
+                                              rstn           1           3      100.00 
 
 Total Node Count     =        142 
-Toggled Node Count   =        101 
-Untoggled Node Count =         41 
+Toggled Node Count   =        139 
+Untoggled Node Count =          3 
 
-Toggle Coverage      =      71.47% (203 of 284 bins)
+Toggle Coverage      =      98.59% (280 of 284 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captured_pd_field1
@@ -1576,7 +1572,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -1607,8 +1603,8 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        274        always @(posedge clk) begin
-    69              1                        274           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        310        always @(posedge clk) begin
+    69              1                        310           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -1618,35 +1614,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        205     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        205     
-    79       1 (GI=2)                        205     
-    79       1 (GI=3)                        205     
-    79       1 (GI=4)                        205     
-    79       1 (GI=5)                        205     
-    79       1 (GI=6)                        209     
+    79       1 (GI=0)                        223     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        223     
+    79       1 (GI=2)                        223     
+    79       1 (GI=3)                        223     
+    79       1 (GI=4)                        223     
+    79       1 (GI=5)                        223     
+    79       1 (GI=6)                        227     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                         95     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        142     
-    83       1 (GI=3)                        189     
-    83       1 (GI=4)                        223     
-    83       1 (GI=5)                        260     
-    83       1 (GI=6)                        301     
+    83       1 (GI=1)                        104     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        153     
+    83       1 (GI=3)                        204     
+    83       1 (GI=4)                        242     
+    83       1 (GI=5)                        279     
+    83       1 (GI=6)                        333     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        368        always @(posedge clk) 
+    88              1                        404        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        368             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        404             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214       150        64    70.09%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -1657,15 +1653,14 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captured_
                                                clk           4           4      100.00 
           gen_debug_muxed_data_to_multicycle[0-31]           4           4      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-6]           4           4      100.00 
                                 out_data_bus[0-31]           4           4      100.00 
 
-Total Node Count     =        107 
+Total Node Count     =         75 
 Toggled Node Count   =         75 
-Untoggled Node Count =         32 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      70.09% (150 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captured_pd_field2
@@ -1710,7 +1705,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     34                                                  //Outgoing data bus
     35                                                  output [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
     36                                               
-    37                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
+    37                                                  //wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_next;
     38                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_spaced;
     39                                                  wire [DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-1:0]     in_data_bus_padded;
     40                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      out_data_bus;
@@ -1723,7 +1718,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     47                                                  wire [OUT_DATA_BUS_WIDTH-1:0] 		      muxed_data_after_or[DATA_SEL_OPTIONS-1:0];
     48                                                  
     49                                                  //Created to avoid Lints
-    50              1                         34        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
+    50              1                         40        assign in_data_bus_padded = {{(DATA_SEL_OPTIONS*OUT_DATA_BUS_WIDTH-IN_DATA_BUS_WIDTH*NUM_OF_IN_DATA_BUSES){1'b0}}, in_data_bus};   
     51                                               
     52                                                  genvar 					      i,j;
     53                                                  generate
@@ -1734,15 +1729,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     58                                                   		if (LAST_DATA_WIDTH == 0) 
     59                                               	    	  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = in_data_bus_padded[(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES+j)*OUT_DATA_BUS_WIDTH+:OUT_DATA_BUS_WIDTH];	
     60                                               		else
-    61     1 (GI=0,6)                         34     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
+    61     1 (GI=0,6)                         40     		  assign in_data_bus_spaced[OUT_DATA_BUS_WIDTH*(i*DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES + j)+:OUT_DATA_BUS_WIDTH] = (j == (DATA_SEL_OPTIONS/NUM_OF_IN_DATA_BUSES-1)) ?
     62                                               																    {{(OUT_DATA_BUS_WIDTH-LAST_DATA_WIDTH){1'b0}},in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:LAST_DATA_WIDTH]} :
     63                                               																    in_data_bus_padded[(i*IN_DATA_BUS_WIDTH+j*OUT_DATA_BUS_WIDTH)+:OUT_DATA_BUS_WIDTH];	     						
     64                                               	     end
     65                                               	end
     66                                                  endgenerate
     67                                               
-    68              1                        274        always @(posedge clk) begin
-    69              1                        274           one_hot_select_vector_r <=  1'b1 << in_data_sel;
+    68              1                        310        always @(posedge clk) begin
+    69              1                        310           one_hot_select_vector_r <=  1'b1 << in_data_sel;
     70                                                  end
     71                                               
     72                                               //   //Take the relevant data
@@ -1752,35 +1747,35 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captur
     76                                                  genvar k;
     77                                                  generate
     78                                                     for (k = 0; k < DATA_SEL_OPTIONS; k= k + 1) begin: gen2
-    79       1 (GI=0)                        169     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
-    79       1 (GI=1)                        169     
-    79       1 (GI=2)                        169     
-    79       1 (GI=3)                        169     
-    79       1 (GI=4)                        169     
-    79       1 (GI=5)                        169     
-    79       1 (GI=6)                        173     
+    79       1 (GI=0)                        193     	 assign muxed_data_masked[k] = in_data_bus_spaced[k*OUT_DATA_BUS_WIDTH +: OUT_DATA_BUS_WIDTH] & ({OUT_DATA_BUS_WIDTH{one_hot_select_vector_r[k]}});
+    79       1 (GI=1)                        193     
+    79       1 (GI=2)                        193     
+    79       1 (GI=3)                        193     
+    79       1 (GI=4)                        193     
+    79       1 (GI=5)                        193     
+    79       1 (GI=6)                        197     
     80                                               	 if (k==0)
     81                                               	   assign muxed_data_after_or[0] = muxed_data_masked[0];
     82                                               	 else
-    83       1 (GI=1)                         80     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
-    83       1 (GI=2)                        120     
-    83       1 (GI=3)                        160     
-    83       1 (GI=4)                        183     
-    83       1 (GI=5)                        205     
-    83       1 (GI=6)                        235     
+    83       1 (GI=1)                         94     	   assign muxed_data_after_or[k] = muxed_data_after_or[k-1] | muxed_data_masked[k];
+    83       1 (GI=2)                        139     
+    83       1 (GI=3)                        189     
+    83       1 (GI=4)                        216     
+    83       1 (GI=5)                        241     
+    83       1 (GI=6)                        281     
     84                                                     end
     85                                                  endgenerate
     86                                                  
     87                                               				 
-    88              1                        251        always @(posedge clk) 
+    88              1                        312        always @(posedge clk) 
     89                                                    begin        
     90                                               //        gen_debug_muxed_data_to_multicycle           <=  muxed_data_next;	
-    91              1                        251             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
+    91              1                        312             gen_debug_muxed_data_to_multicycle           <=  muxed_data_after_or[DATA_SEL_OPTIONS-1];	
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        214       150        64    70.09%
+    Toggles                        150       150         0   100.00%
 
 ================================Toggle Details================================
 
@@ -1789,17 +1784,16 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_3/gen_multicycle_captured_
                                               Node      1H->0L      0L->1H  "Coverage"
                                               ---------------------------------------
                                                clk           4           4      100.00 
-          gen_debug_muxed_data_to_multicycle[0-31]           2           2      100.00 
+          gen_debug_muxed_data_to_multicycle[0-31]           3           3      100.00 
                                   in_data_sel[0-2]           4           4      100.00 
-                             muxed_data_next[0-31]           0           0        0.00 
                       one_hot_select_vector_r[0-6]           4           4      100.00 
-                                out_data_bus[0-31]           2           2      100.00 
+                                out_data_bus[0-31]           3           3      100.00 
 
-Total Node Count     =        107 
+Total Node Count     =         75 
 Toggled Node Count   =         75 
-Untoggled Node Count =         32 
+Untoggled Node Count =          0 
 
-Toggle Coverage      =      70.09% (150 of 214 bins)
+Toggle Coverage      =     100.00% (150 of 150 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u/pd_debug_3
@@ -1816,53 +1810,53 @@ Branch Coverage for instance /TOP/pd_debug_u/pd_debug_3
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ------------------------------------IF Branch------------------------------------
-    81                                       121     Count coming in to IF
+    81                                       123     Count coming in to IF
     81              1                          7        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    82              1                        114                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              1                        116                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    82                                       107     Count coming in to IF
-    82              2                         52                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
-    82              3                         55                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82                                       109     Count coming in to IF
+    82              2                         53                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
+    82              3                         56                                   pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    84                                        82     Count coming in to IF
+    84                                        95     Count coming in to IF
     84              1                          6        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
-    85              1                         76                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              1                         89                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    85                                        71     Count coming in to IF
-    85              2                         34                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
-    85              3                         37                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85                                        84     Count coming in to IF
+    85              2                         41                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
+    85              3                         43                                   pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    94                                        29     Count coming in to IF
-    94              1                         11           if (!rstn) pd_capture_q_field1 <= 1'b0;
-    95              1                         18           else       pd_capture_q_field1 <= pd_capture_field1;
+    94                                        31     Count coming in to IF
+    94              1                         12           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    95              1                         19           else       pd_capture_q_field1 <= pd_capture_field1;
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    100                                      271     Count coming in to IF
+    100                                      293     Count coming in to IF
     100             1                        130           if (pd_capture_event_field1) begin
-                                             141     All False Count
+                                             163     All False Count
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    138                                       25     Count coming in to IF
-    138             1                          9           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                         16           else       pd_capture_q_field2 <= pd_capture_field2;
+    138                                       29     Count coming in to IF
+    138             1                         10           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         19           else       pd_capture_q_field2 <= pd_capture_field2;
 Branch totals: 2 hits of 2 branches = 100.00%
 
 ------------------------------------IF Branch------------------------------------
-    144                                      233     Count coming in to IF
-    144             1                         60           if (pd_capture_event_field2) begin
-                                             173     All False Count
+    144                                      265     Count coming in to IF
+    144             1                         72           if (pd_capture_event_field2) begin
+                                             193     All False Count
 Branch totals: 2 hits of 2 branches = 100.00%
 
 
@@ -1875,7 +1869,7 @@ Expression Coverage:
 
 Expression Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
 ----------------Focused Expression View-----------------
 Line       64 Item    1  (e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray)))
 Expression totals: 2 of 2 input terms covered = 100.00%
@@ -1904,9 +1898,9 @@ Expression totals: 2 of 2 input terms covered = 100.00%
      Rows:       Hits  FEC Target                                                                                                                                                             Non-masking condition(s)      
  ---------  ---------  --------------------                                                                                                                                                   -------------------------     
   Row   1:          4  e_valid_0                                                                                                                                                              -                             
-  Row   2:          3  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
+  Row   2:          4  e_valid_1                                                                                                                                                              ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))
   Row   3:          4  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_0  e_valid                       
-  Row   4:          3  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
+  Row   4:          4  ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray))_1  e_valid                       
 
 ----------------Focused Expression View-----------------
 Line       67 Item    1  ((e_valid && capture_match_field1) && cif2dbg_c_debug_pd_en)
@@ -1940,11 +1934,11 @@ Expression totals: 2 of 3 input terms covered = 66.66%
      Rows:       Hits  FEC Target               Non-masking condition(s)      
  ---------  ---------  --------------------     -------------------------     
   Row   1:          4  e_valid_0                -                             
-  Row   2:          3  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
+  Row   2:          4  e_valid_1                (cif2dbg_c_debug_pd_en && capture_match_field2)
   Row   3:          4  capture_match_field2_0   e_valid                       
-  Row   4:          3  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
+  Row   4:          4  capture_match_field2_1   (cif2dbg_c_debug_pd_en && e_valid)
   Row   5:    ***0***  cif2dbg_c_debug_pd_en_0  (e_valid && capture_match_field2)
-  Row   6:          3  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
+  Row   6:          4  cif2dbg_c_debug_pd_en_1  (e_valid && capture_match_field2)
 
 ----------------Focused Expression View-----------------
 Line       70 Item    1  (e_valid & cif2dbg_c_debug_pd_en)
@@ -2005,9 +1999,9 @@ Expression totals: 2 of 2 input terms covered = 100.00%
      Rows:       Hits  FEC Target                           Non-masking condition(s)      
  ---------  ---------  --------------------                 -------------------------     
   Row   1:          2  cif2dbg_c_debug_pd_capture_en_0      -                             
-  Row   2:          3  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
+  Row   2:          4  cif2dbg_c_debug_pd_capture_en_1      dbg2cif_e_debug_pd_field2_cnt_inc
   Row   3:          4  dbg2cif_e_debug_pd_field2_cnt_inc_0  cif2dbg_c_debug_pd_capture_en 
-  Row   4:          3  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
+  Row   4:          4  dbg2cif_e_debug_pd_field2_cnt_inc_1  cif2dbg_c_debug_pd_capture_en 
 
 ----------------Focused Expression View-----------------
 Line       81 Item    1  (~cif2dbg_c_debug_pd_capture_en? 1'b0: (pd_capture_event_field1? 1'b1: pd_capture_q_field1))
@@ -2041,11 +2035,11 @@ Expression totals: 3 of 3 input terms covered = 100.00%
      Rows:       Hits  FEC Target                       Non-masking condition(s)      
  ---------  ---------  --------------------             -------------------------     
   Row   1:          2  cif2dbg_c_debug_pd_capture_en_0  -                             
-  Row   2:          3  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
+  Row   2:          4  cif2dbg_c_debug_pd_capture_en_1  (pd_capture_event_field2? 1'b1: pd_capture_q_field2)
   Row   3:          3  pd_capture_event_field2_0        (cif2dbg_c_debug_pd_capture_en && ~pd_capture_q_field2)
-  Row   4:          3  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
+  Row   4:          4  pd_capture_event_field2_1        cif2dbg_c_debug_pd_capture_en 
   Row   5:          3  pd_capture_q_field2_0            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
-  Row   6:          2  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
+  Row   6:          3  pd_capture_q_field2_1            (cif2dbg_c_debug_pd_capture_en && ~pd_capture_event_field2)
 
 ----------------Focused Expression View-----------------
 Line       89 Item    1  (((e_valid && capture_trigger) && cif2dbg_c_debug_pd_en_trigger_match) && cif2dbg_c_debug_pd_en)
@@ -2081,7 +2075,7 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
 
     Line         Item                      Count     Source 
     ----         ----                      -----     ------ 
-  File control_pd_debug_with_capture_v3.sv
+  File control_pd_debug_with_capture_v3_updated.sv
     1                                                module control_pd_debug_with_capture_v3 #(
     2                                                
     3                                                  parameter PD_WIDTH = 100, // Width of incoming PD
@@ -2145,42 +2139,42 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
     61                                                  assign cif2dbg_c_debug_pd_en_trigger_match = cif2dbg_c_debug_pd_en_reg[2]; 
     62                                                  assign cif2dbg_c_debug_pd_capture_last_en = cif2dbg_c_debug_pd_en_reg[3]; 
     63                                                  
-    64              1                        359        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
-    65              1                        359        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
+    64              1                        401        assign capture_match_field1 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field1_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field1_mask_cfg_mem_regarray));
+    65              1                        401        assign capture_match_field2 = e_valid && ((eq_pd & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray) == (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray & mem2dbg_c_debug_pd_field2_mask_cfg_mem_regarray));
     66                                                  
-    67              1                        121        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
-    68              1                        117        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
+    67              1                        123        assign dbg2cif_e_debug_pd_field1_cnt_inc = e_valid && capture_match_field1 && cif2dbg_c_debug_pd_en;
+    68              1                        131        assign dbg2cif_e_debug_pd_field2_cnt_inc = e_valid && capture_match_field2 && cif2dbg_c_debug_pd_en;
     69                                                  
-    70              1                         45        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
+    70              1                         47        assign dbg2cif_e_debug_pd_total_pd_cnt_inc = e_valid & cif2dbg_c_debug_pd_en;
     71                                                  assign dbg2cif_e_debug_pd_field1_byte_cnt_inc = dbg2cif_e_debug_pd_field1_cnt_inc;
     72                                                  assign dbg2cif_e_debug_pd_field2_byte_cnt_inc = dbg2cif_e_debug_pd_field2_cnt_inc;
-    73              1                        159        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
+    73              1                        179        assign dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount = eq_pd[PACKET_SIZE_OFFSET +: PACKET_SIZE_WIDTH];
     74                                                  
-    75              1                        248        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
+    75              1                        252        assign pd_capture_event_field1 = cif2dbg_c_debug_pd_capture_en && 
     76                                               				    (dbg2cif_e_debug_pd_field1_cnt_inc || (capture_trigger && e_valid && cif2dbg_c_debug_pd_en_trigger_match)) && 
     77                                               				    (!pd_capture_q_field1 || cif2dbg_c_debug_pd_capture_last_en);
-    78              1                         92        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
+    78              1                        104        assign pd_capture_event_field2 = cif2dbg_c_debug_pd_capture_en && 
     79                                               				    dbg2cif_e_debug_pd_field2_cnt_inc ;
     80                                                  
-    81              1                        125        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    81              1                        127        assign pd_capture_field1 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     82                                                                             pd_capture_event_field1 ? 1'd1 :  pd_capture_q_field1 ; 
     83                                               
-    84              1                         86        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
+    84              1                         99        assign pd_capture_field2 = (cif2dbg_c_debug_pd_capture_en == 1'd0) ? 1'd0 :
     85                                                                             pd_capture_event_field2 ? 1'd1 :  pd_capture_q_field2 ; 
     86                                               
     87                                                  assign dbg2cif_e_debug_pd_capture_match_field1 = pd_capture_event_field1;
     88                                                  assign dbg2cif_e_debug_pd_capture_match_field2 = pd_capture_event_field2;
-    89              1                        147        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
+    89              1                        151        assign dbg2cif_e_debug_pd_capture_match_cnt_inc = e_valid && capture_trigger && cif2dbg_c_debug_pd_en_trigger_match && cif2dbg_c_debug_pd_en;
     90                                               
     91                                                  assign capture_match_o = pd_capture_event_field1;
     92                                               
-    93              1                         29        always_ff @(posedge clk) begin
-    94              1                         11           if (!rstn) pd_capture_q_field1 <= 1'b0;
-    95              1                         18           else       pd_capture_q_field1 <= pd_capture_field1;
+    93              1                         31        always_ff @(posedge clk) begin
+    94              1                         12           if (!rstn) pd_capture_q_field1 <= 1'b0;
+    95              1                         19           else       pd_capture_q_field1 <= pd_capture_field1;
     96                                                  end
     97                                               
-    98              1                        271        always_comb begin
-    99              1                        271           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
+    98              1                        293        always_comb begin
+    99              1                        293           dbg2cif_c_debug_pd_in_field1_nxt = dbg2cif_c_debug_pd_in_field1;
     100                                                    if (pd_capture_event_field1) begin
     101             1                        130     	 dbg2cif_c_debug_pd_in_field1_nxt = eq_pd;
     102                                                    end
@@ -2218,15 +2212,15 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
     134                                                    .in_data_sel  (cif2dbg_c_debug_pd_captured_word_sel[PD_MUX_SEL_WIDTH:1])
     135                                                    );
     136                                              
-    137             1                         25        always_ff @(posedge clk) begin
-    138             1                          9           if (!rstn) pd_capture_q_field2 <= 1'b0;
-    139             1                         16           else       pd_capture_q_field2 <= pd_capture_field2;
+    137             1                         29        always_ff @(posedge clk) begin
+    138             1                         10           if (!rstn) pd_capture_q_field2 <= 1'b0;
+    139             1                         19           else       pd_capture_q_field2 <= pd_capture_field2;
     140                                                 end
     141                                              
-    142             1                        233        always_comb begin
-    143             1                        233           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
+    142             1                        265        always_comb begin
+    143             1                        265           dbg2cif_c_debug_pd_in_field2_nxt = dbg2cif_c_debug_pd_in_field2;
     144                                                    if (pd_capture_event_field2) begin
-    145             1                         60     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
+    145             1                         72     	 dbg2cif_c_debug_pd_in_field2_nxt = eq_pd;
     146                                                    end
     147                                                 end
     148                                                 
@@ -2240,13 +2234,13 @@ Statement Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
     156                                              	    .data_out (dbg2cif_c_debug_pd_in_field2), .*);
     157                                                    end
     158                                                    else begin
-    159             1                         64     	 always_ff @ (posedge clk) begin    
-    160             1                         64     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
+    159             1                         76     	 always_ff @ (posedge clk) begin    
+    160             1                         76     	    dbg2cif_c_debug_pd_in_field2 <= dbg2cif_c_debug_pd_in_field2_nxt;
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        284       281         3    98.94%
+    Toggles                        284       282         2    99.29%
 
 ================================Toggle Details================================
 
@@ -2256,7 +2250,7 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
                                               ---------------------------------------
                            CFG_anchor_clk_override           0           0        0.00 
                               capture_match_field1           4           4      100.00 
-                              capture_match_field2           3           3      100.00 
+                              capture_match_field2           4           4      100.00 
                                    capture_match_o           4           4      100.00 
                                    capture_trigger           4           4      100.00 
                      cif2dbg_c_debug_pd_capture_en           2           2      100.00 
@@ -2272,31 +2266,31 @@ Toggle Coverage for instance /TOP/pd_debug_u/pd_debug_3 --
                                                clk           4           4      100.00 
                       dbg2cif_c_debug_pd_out[0-31]           4           4      100.00 
                dbg2cif_c_debug_pd_out_field1[0-31]           4           4      100.00 
-               dbg2cif_c_debug_pd_out_field2[0-31]           2           2      100.00 
+               dbg2cif_c_debug_pd_out_field2[0-31]           3           3      100.00 
           dbg2cif_e_debug_pd_capture_match_cnt_inc           4           4      100.00 
            dbg2cif_e_debug_pd_capture_match_field1           4           4      100.00 
-           dbg2cif_e_debug_pd_capture_match_field2           2           2      100.00 
+           dbg2cif_e_debug_pd_capture_match_field2           3           3      100.00 
             dbg2cif_e_debug_pd_field1_byte_cnt_inc           4           4      100.00 
                  dbg2cif_e_debug_pd_field1_cnt_inc           4           4      100.00 
-            dbg2cif_e_debug_pd_field2_byte_cnt_inc           3           3      100.00 
-                 dbg2cif_e_debug_pd_field2_cnt_inc           3           3      100.00 
-               dbg2cif_e_debug_pd_total_pd_cnt_inc           3           4      100.00 
+            dbg2cif_e_debug_pd_field2_byte_cnt_inc           4           4      100.00 
+                 dbg2cif_e_debug_pd_field2_cnt_inc           4           4      100.00 
+               dbg2cif_e_debug_pd_total_pd_cnt_inc           4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount[0-11] 
                                                              4           4      100.00 
-                                           e_valid           3           4      100.00 
+                                           e_valid           4           4      100.00 
                            pd_capture_event_field1           4           4      100.00 
-                           pd_capture_event_field2           2           2      100.00 
+                           pd_capture_event_field2           3           3      100.00 
                                  pd_capture_field1           2           3      100.00 
-                                 pd_capture_field2           1           1      100.00 
+                                 pd_capture_field2           1           2      100.00 
                                pd_capture_q_field1           1           2      100.00 
-                               pd_capture_q_field2           1           1      100.00 
-                                              rstn           0           3       50.00 
+                               pd_capture_q_field2           1           2      100.00 
+                                              rstn           1           3      100.00 
 
 Total Node Count     =        142 
-Toggled Node Count   =        140 
-Untoggled Node Count =          2 
+Toggled Node Count   =        141 
+Untoggled Node Count =          1 
 
-Toggle Coverage      =      98.94% (281 of 284 bins)
+Toggle Coverage      =      99.29% (282 of 284 bins)
 
 =================================================================================
 === Instance: /TOP/pd_debug_u
@@ -2502,9 +2496,9 @@ Statement Coverage for instance /TOP/pd_debug_u --
     143                                              				  dbg2cif_c_debug_pd_out_1); // Captured PD field)
     144                                              
     145                                              
-    146             1                        314     always @(posedge clk) begin
-    147             1                        314     	eq_pd_after_pd_debug_1<=eq_pd;
-    148             1                        314     	e_valid_after_pd_debug_1<=e_valid;
+    146             1                        354     always @(posedge clk) begin
+    147             1                        354     	eq_pd_after_pd_debug_1<=eq_pd;
+    148             1                        354     	e_valid_after_pd_debug_1<=e_valid;
     149                                              end
     150                                              
     151                                              control_pd_debug_with_capture_v3 #(
@@ -2540,10 +2534,10 @@ Statement Coverage for instance /TOP/pd_debug_u --
     181                                              				  dbg2cif_c_debug_pd_out_2); // Captured PD field)
     182                                              
     183                                              
-    184             1                        364     always @(posedge clk) begin
-    185             1                        364     	eq_pd_after_pd_debug_2<=eq_pd_after_pd_debug_1;
-    186             1                        364     	eq_pd_after_pd_debug_2[113]<=eq_pd_after_pd_debug_1[113] || capture_match_o_2;
-    187             1                        364     	e_valid_after_pd_debug_2<=e_valid_after_pd_debug_1;
+    184             1                        405     always @(posedge clk) begin
+    185             1                        405     	eq_pd_after_pd_debug_2<=eq_pd_after_pd_debug_1;
+    186             1                        405     	eq_pd_after_pd_debug_2[113]<=eq_pd_after_pd_debug_1[113] || capture_match_o_2;
+    187             1                        405     	e_valid_after_pd_debug_2<=e_valid_after_pd_debug_1;
     188                                              end
     189                                              
     190                                              control_pd_debug_with_capture_v3 #(
@@ -2579,15 +2573,15 @@ Statement Coverage for instance /TOP/pd_debug_u --
     220                                              				  dbg2cif_c_debug_pd_out_3); // Captured PD field)
     221                                              
     222                                              
-    223             1                        395     always @(posedge clk) begin
-    224             1                        395     	eq_pd_after_pd_debug_3<=eq_pd_after_pd_debug_2;
-    225             1                        395     	eq_pd_after_pd_debug_3[113]<=eq_pd_after_pd_debug_2[113] || capture_match_o_3;
-    226             1                        395     	e_valid_after_pd_debug_3<=e_valid_after_pd_debug_2;
+    223             1                        437     always @(posedge clk) begin
+    224             1                        437     	eq_pd_after_pd_debug_3<=eq_pd_after_pd_debug_2;
+    225             1                        437     	eq_pd_after_pd_debug_3[113]<=eq_pd_after_pd_debug_2[113] || capture_match_o_3;
+    226             1                        437     	e_valid_after_pd_debug_3<=e_valid_after_pd_debug_2;
 
 Toggle Coverage:
     Enabled Coverage              Bins      Hits    Misses  Coverage
     ----------------              ----      ----    ------  --------
-    Toggles                        660       473       187    71.66%
+    Toggles                        660       486       174    73.63%
 
 ================================Toggle Details================================
 
@@ -2628,10 +2622,10 @@ Toggle Coverage for instance /TOP/pd_debug_u --
          dbg2cif_e_debug_pd_capture_match_field1_1           3           3      100.00 
          dbg2cif_e_debug_pd_capture_match_field1_2           4           4      100.00 
          dbg2cif_e_debug_pd_capture_match_field1_3           4           4      100.00 
-           dbg2cif_e_debug_pd_capture_match_field2           2           2      100.00 
-         dbg2cif_e_debug_pd_capture_match_field2_1           0           0        0.00 
-         dbg2cif_e_debug_pd_capture_match_field2_2           0           0        0.00 
-         dbg2cif_e_debug_pd_capture_match_field2_3           2           2      100.00 
+           dbg2cif_e_debug_pd_capture_match_field2           3           3      100.00 
+         dbg2cif_e_debug_pd_capture_match_field2_1           1           1      100.00 
+         dbg2cif_e_debug_pd_capture_match_field2_2           1           1      100.00 
+         dbg2cif_e_debug_pd_capture_match_field2_3           3           3      100.00 
             dbg2cif_e_debug_pd_field1_byte_cnt_inc           4           4      100.00 
           dbg2cif_e_debug_pd_field1_byte_cnt_inc_1           1           1      100.00 
           dbg2cif_e_debug_pd_field1_byte_cnt_inc_2           1           1      100.00 
@@ -2640,18 +2634,18 @@ Toggle Coverage for instance /TOP/pd_debug_u --
                dbg2cif_e_debug_pd_field1_cnt_inc_1           1           1      100.00 
                dbg2cif_e_debug_pd_field1_cnt_inc_2           1           1      100.00 
                dbg2cif_e_debug_pd_field1_cnt_inc_3           4           4      100.00 
-            dbg2cif_e_debug_pd_field2_byte_cnt_inc           3           3      100.00 
-          dbg2cif_e_debug_pd_field2_byte_cnt_inc_1           0           0        0.00 
-          dbg2cif_e_debug_pd_field2_byte_cnt_inc_2           0           0        0.00 
-          dbg2cif_e_debug_pd_field2_byte_cnt_inc_3           3           3      100.00 
-                 dbg2cif_e_debug_pd_field2_cnt_inc           3           3      100.00 
-               dbg2cif_e_debug_pd_field2_cnt_inc_1           0           0        0.00 
-               dbg2cif_e_debug_pd_field2_cnt_inc_2           0           0        0.00 
-               dbg2cif_e_debug_pd_field2_cnt_inc_3           3           3      100.00 
-               dbg2cif_e_debug_pd_total_pd_cnt_inc           3           4      100.00 
-             dbg2cif_e_debug_pd_total_pd_cnt_inc_1           3           4      100.00 
-             dbg2cif_e_debug_pd_total_pd_cnt_inc_2           3           4      100.00 
-             dbg2cif_e_debug_pd_total_pd_cnt_inc_3           3           4      100.00 
+            dbg2cif_e_debug_pd_field2_byte_cnt_inc           4           4      100.00 
+          dbg2cif_e_debug_pd_field2_byte_cnt_inc_1           1           1      100.00 
+          dbg2cif_e_debug_pd_field2_byte_cnt_inc_2           1           1      100.00 
+          dbg2cif_e_debug_pd_field2_byte_cnt_inc_3           4           4      100.00 
+                 dbg2cif_e_debug_pd_field2_cnt_inc           4           4      100.00 
+               dbg2cif_e_debug_pd_field2_cnt_inc_1           1           1      100.00 
+               dbg2cif_e_debug_pd_field2_cnt_inc_2           1           1      100.00 
+               dbg2cif_e_debug_pd_field2_cnt_inc_3           4           4      100.00 
+               dbg2cif_e_debug_pd_total_pd_cnt_inc           4           4      100.00 
+             dbg2cif_e_debug_pd_total_pd_cnt_inc_1           4           4      100.00 
+             dbg2cif_e_debug_pd_total_pd_cnt_inc_2           4           4      100.00 
+             dbg2cif_e_debug_pd_total_pd_cnt_inc_3           4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount[0-11] 
                                                              4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount_1[0-11] 
@@ -2660,19 +2654,19 @@ dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount_2[0-11]
                                                              4           4      100.00 
 dbg2cif_eq_debug_pd_field_byte_cnt_inc_amount_3[0-11] 
                                                              4           4      100.00 
-                                           e_valid           3           4      100.00 
-                          e_valid_after_pd_debug_1           3           4      100.00 
-                          e_valid_after_pd_debug_2           3           4      100.00 
-                          e_valid_after_pd_debug_3           3           4      100.00 
+                                           e_valid           4           4      100.00 
+                          e_valid_after_pd_debug_1           4           4      100.00 
+                          e_valid_after_pd_debug_2           4           4      100.00 
+                          e_valid_after_pd_debug_3           4           4      100.00 
                                         eq_pd[113]           4           4      100.00 
                                     eq_pd[114-199]           0           0        0.00 
-                                              rstn           0           3       50.00 
+                                              rstn           1           3      100.00 
 
 Total Node Count     =        330 
-Toggled Node Count   =        236 
-Untoggled Node Count =         94 
+Toggled Node Count   =        243 
+Untoggled Node Count =         87 
 
-Toggle Coverage      =      71.66% (473 of 660 bins)
+Toggle Coverage      =      73.63% (486 of 660 bins)
 
 =================================================================================
 === Instance: /pd_debug_pkg
@@ -2695,67 +2689,67 @@ Covergroup                                             Metric       Goal       B
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        14          1          -    Covered              
-        bin auto[1]                                       142          1          -    Covered              
+        bin auto[0]                                        15          1          -    Covered              
+        bin auto[1]                                       161          1          -    Covered              
     Coverpoint count_en                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                        14          1          -    Covered              
-        bin auto[1]                                       128          1          -    Covered              
+        bin auto[1]                                       147          1          -    Covered              
     Coverpoint match_field1                           100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        99          1          -    Covered              
+        bin auto[0]                                       118          1          -    Covered              
         bin auto[1]                                        43          1          -    Covered              
     Coverpoint match_field2                           100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        98          1          -    Covered              
-        bin auto[1]                                        44          1          -    Covered              
+        bin auto[0]                                       112          1          -    Covered              
+        bin auto[1]                                        49          1          -    Covered              
     Coverpoint capture_last_en                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        42          1          -    Covered              
-        bin auto[1]                                       100          1          -    Covered              
+        bin auto[0]                                        41          1          -    Covered              
+        bin auto[1]                                       120          1          -    Covered              
     Coverpoint capture_first_en                       100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       121          1          -    Covered              
+        bin auto[0]                                       140          1          -    Covered              
         bin auto[1]                                        21          1          -    Covered              
     Coverpoint capture_trigger_en                     100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       115          1          -    Covered              
-        bin auto[1]                                        27          1          -    Covered              
+        bin auto[0]                                       135          1          -    Covered              
+        bin auto[1]                                        26          1          -    Covered              
     Coverpoint cascade1                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                       115          1          -    Covered              
-        bin auto[1]                                        27          1          -    Covered              
+        bin auto[1]                                        46          1          -    Covered              
     Coverpoint cascade2                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                       116          1          -    Covered              
-        bin auto[1]                                        26          1          -    Covered              
+        bin auto[1]                                        45          1          -    Covered              
     Coverpoint match_instance1                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       139          1          -    Covered              
+        bin auto[0]                                       158          1          -    Covered              
         bin auto[1]                                         3          1          -    Covered              
     Coverpoint match_instance2                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       129          1          -    Covered              
+        bin auto[0]                                       148          1          -    Covered              
         bin auto[1]                                        13          1          -    Covered              
     Cross count_field1                                100.00%        100          -    Covered              
         covered/total bins:                                 4          4          -                      
@@ -2764,17 +2758,17 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                          37          1          -    Covered              
             bin <auto[0],auto[1]>                           6          1          -    Covered              
-            bin <auto[1],auto[0]>                          91          1          -    Covered              
+            bin <auto[1],auto[0]>                         110          1          -    Covered              
             bin <auto[0],auto[0]>                           8          1          -    Covered              
     Cross count_field2                                100.00%        100          -    Covered              
         covered/total bins:                                 4          4          -                      
         missing/total bins:                                 0          4          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1]>                          37          1          -    Covered              
-            bin <auto[0],auto[1]>                           7          1          -    Covered              
-            bin <auto[1],auto[0]>                          91          1          -    Covered              
-            bin <auto[0],auto[0]>                           7          1          -    Covered              
+            bin <auto[1],auto[1]>                          43          1          -    Covered              
+            bin <auto[0],auto[1]>                           6          1          -    Covered              
+            bin <auto[1],auto[0]>                         104          1          -    Covered              
+            bin <auto[0],auto[0]>                           8          1          -    Covered              
     Cross capture_field1_last                         100.00%        100          -    Covered              
         covered/total bins:                                 8          8          -                      
         missing/total bins:                                 0          8          -                      
@@ -2782,12 +2776,12 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1],auto[1]>                  23          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  73          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  92          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  14          1          -    Covered              
             bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  18          1          -    Covered              
-            bin <auto[0],auto[0],auto[0]>                   7          1          -    Covered              
+            bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_field1_first                        100.00%        100          -    Covered              
         covered/total bins:                                 8          8          -                      
         missing/total bins:                                 0          8          -                      
@@ -2795,19 +2789,19 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1],auto[1]>                  23          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  73          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  92          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  14          1          -    Covered              
             bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  18          1          -    Covered              
-            bin <auto[0],auto[0],auto[0]>                   7          1          -    Covered              
+            bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_trigger                             100.00%        100          -    Covered              
         covered/total bins:                                 3          3          -                      
         missing/total bins:                                 0          3          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1]>                          27          1          -    Covered              
-            bin <auto[0],auto[1]>                         101          1          -    Covered              
+            bin <auto[1],auto[1]>                          26          1          -    Covered              
+            bin <auto[0],auto[1]>                         121          1          -    Covered              
             bin <auto[0],auto[0]>                          14          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
@@ -2816,12 +2810,12 @@ Covergroup                                             Metric       Goal       B
         missing/total bins:                                 0          8          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1],auto[1]>                  20          1          -    Covered              
+            bin <auto[1],auto[1],auto[1]>                  26          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  76          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  89          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  17          1          -    Covered              
-            bin <auto[0],auto[0],auto[1]>                   4          1          -    Covered              
+            bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  15          1          -    Covered              
             bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_field2_first                        100.00%        100          -    Covered              
@@ -2829,12 +2823,12 @@ Covergroup                                             Metric       Goal       B
         missing/total bins:                                 0          8          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1],auto[1]>                  20          1          -    Covered              
+            bin <auto[1],auto[1],auto[1]>                  26          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  76          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  89          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  17          1          -    Covered              
-            bin <auto[0],auto[0],auto[1]>                   4          1          -    Covered              
+            bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  15          1          -    Covered              
             bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross cascade_from_instance1                      100.00%        100          -    Covered              
@@ -2843,7 +2837,7 @@ Covergroup                                             Metric       Goal       B
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                           3          1          -    Covered              
-            bin <auto[1],auto[0]>                          24          1          -    Covered              
+            bin <auto[1],auto[0]>                          43          1          -    Covered              
             bin <auto[0],auto[0]>                         115          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
@@ -2853,7 +2847,7 @@ Covergroup                                             Metric       Goal       B
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                          13          1          -    Covered              
-            bin <auto[1],auto[0]>                          13          1          -    Covered              
+            bin <auto[1],auto[0]>                          32          1          -    Covered              
             bin <auto[0],auto[0]>                         116          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
@@ -2871,67 +2865,67 @@ Covergroup                                             Metric       Goal       B
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        14          1          -    Covered              
-        bin auto[1]                                       142          1          -    Covered              
+        bin auto[0]                                        15          1          -    Covered              
+        bin auto[1]                                       161          1          -    Covered              
     Coverpoint count_en                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                        14          1          -    Covered              
-        bin auto[1]                                       128          1          -    Covered              
+        bin auto[1]                                       147          1          -    Covered              
     Coverpoint match_field1                           100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        99          1          -    Covered              
+        bin auto[0]                                       118          1          -    Covered              
         bin auto[1]                                        43          1          -    Covered              
     Coverpoint match_field2                           100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        98          1          -    Covered              
-        bin auto[1]                                        44          1          -    Covered              
+        bin auto[0]                                       112          1          -    Covered              
+        bin auto[1]                                        49          1          -    Covered              
     Coverpoint capture_last_en                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                        42          1          -    Covered              
-        bin auto[1]                                       100          1          -    Covered              
+        bin auto[0]                                        41          1          -    Covered              
+        bin auto[1]                                       120          1          -    Covered              
     Coverpoint capture_first_en                       100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       121          1          -    Covered              
+        bin auto[0]                                       140          1          -    Covered              
         bin auto[1]                                        21          1          -    Covered              
     Coverpoint capture_trigger_en                     100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       115          1          -    Covered              
-        bin auto[1]                                        27          1          -    Covered              
+        bin auto[0]                                       135          1          -    Covered              
+        bin auto[1]                                        26          1          -    Covered              
     Coverpoint cascade1                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                       115          1          -    Covered              
-        bin auto[1]                                        27          1          -    Covered              
+        bin auto[1]                                        46          1          -    Covered              
     Coverpoint cascade2                               100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
         bin auto[0]                                       116          1          -    Covered              
-        bin auto[1]                                        26          1          -    Covered              
+        bin auto[1]                                        45          1          -    Covered              
     Coverpoint match_instance1                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       139          1          -    Covered              
+        bin auto[0]                                       158          1          -    Covered              
         bin auto[1]                                         3          1          -    Covered              
     Coverpoint match_instance2                        100.00%        100          -    Covered              
         covered/total bins:                                 2          2          -                      
         missing/total bins:                                 0          2          -                      
         % Hit:                                        100.00%        100          -                      
-        bin auto[0]                                       129          1          -    Covered              
+        bin auto[0]                                       148          1          -    Covered              
         bin auto[1]                                        13          1          -    Covered              
     Cross count_field1                                100.00%        100          -    Covered              
         covered/total bins:                                 4          4          -                      
@@ -2940,17 +2934,17 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                          37          1          -    Covered              
             bin <auto[0],auto[1]>                           6          1          -    Covered              
-            bin <auto[1],auto[0]>                          91          1          -    Covered              
+            bin <auto[1],auto[0]>                         110          1          -    Covered              
             bin <auto[0],auto[0]>                           8          1          -    Covered              
     Cross count_field2                                100.00%        100          -    Covered              
         covered/total bins:                                 4          4          -                      
         missing/total bins:                                 0          4          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1]>                          37          1          -    Covered              
-            bin <auto[0],auto[1]>                           7          1          -    Covered              
-            bin <auto[1],auto[0]>                          91          1          -    Covered              
-            bin <auto[0],auto[0]>                           7          1          -    Covered              
+            bin <auto[1],auto[1]>                          43          1          -    Covered              
+            bin <auto[0],auto[1]>                           6          1          -    Covered              
+            bin <auto[1],auto[0]>                         104          1          -    Covered              
+            bin <auto[0],auto[0]>                           8          1          -    Covered              
     Cross capture_field1_last                         100.00%        100          -    Covered              
         covered/total bins:                                 8          8          -                      
         missing/total bins:                                 0          8          -                      
@@ -2958,12 +2952,12 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1],auto[1]>                  23          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  73          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  92          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  14          1          -    Covered              
             bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  18          1          -    Covered              
-            bin <auto[0],auto[0],auto[0]>                   7          1          -    Covered              
+            bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_field1_first                        100.00%        100          -    Covered              
         covered/total bins:                                 8          8          -                      
         missing/total bins:                                 0          8          -                      
@@ -2971,19 +2965,19 @@ Covergroup                                             Metric       Goal       B
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1],auto[1]>                  23          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  73          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  92          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  14          1          -    Covered              
             bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  18          1          -    Covered              
-            bin <auto[0],auto[0],auto[0]>                   7          1          -    Covered              
+            bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_trigger                             100.00%        100          -    Covered              
         covered/total bins:                                 3          3          -                      
         missing/total bins:                                 0          3          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1]>                          27          1          -    Covered              
-            bin <auto[0],auto[1]>                         101          1          -    Covered              
+            bin <auto[1],auto[1]>                          26          1          -    Covered              
+            bin <auto[0],auto[1]>                         121          1          -    Covered              
             bin <auto[0],auto[0]>                          14          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
@@ -2992,12 +2986,12 @@ Covergroup                                             Metric       Goal       B
         missing/total bins:                                 0          8          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1],auto[1]>                  20          1          -    Covered              
+            bin <auto[1],auto[1],auto[1]>                  26          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  76          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  89          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  17          1          -    Covered              
-            bin <auto[0],auto[0],auto[1]>                   4          1          -    Covered              
+            bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  15          1          -    Covered              
             bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross capture_field2_first                        100.00%        100          -    Covered              
@@ -3005,12 +2999,12 @@ Covergroup                                             Metric       Goal       B
         missing/total bins:                                 0          8          -                      
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
-            bin <auto[1],auto[1],auto[1]>                  20          1          -    Covered              
+            bin <auto[1],auto[1],auto[1]>                  26          1          -    Covered              
             bin <auto[1],auto[0],auto[1]>                   3          1          -    Covered              
-            bin <auto[1],auto[1],auto[0]>                  76          1          -    Covered              
-            bin <auto[1],auto[0],auto[0]>                   1          1          -    Covered              
+            bin <auto[1],auto[1],auto[0]>                  89          1          -    Covered              
+            bin <auto[1],auto[0],auto[0]>                   2          1          -    Covered              
             bin <auto[0],auto[1],auto[1]>                  17          1          -    Covered              
-            bin <auto[0],auto[0],auto[1]>                   4          1          -    Covered              
+            bin <auto[0],auto[0],auto[1]>                   3          1          -    Covered              
             bin <auto[0],auto[1],auto[0]>                  15          1          -    Covered              
             bin <auto[0],auto[0],auto[0]>                   6          1          -    Covered              
     Cross cascade_from_instance1                      100.00%        100          -    Covered              
@@ -3019,7 +3013,7 @@ Covergroup                                             Metric       Goal       B
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                           3          1          -    Covered              
-            bin <auto[1],auto[0]>                          24          1          -    Covered              
+            bin <auto[1],auto[0]>                          43          1          -    Covered              
             bin <auto[0],auto[0]>                         115          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
@@ -3029,12 +3023,12 @@ Covergroup                                             Metric       Goal       B
         % Hit:                                        100.00%        100          -                      
         Auto, Default and User Defined Bins:
             bin <auto[1],auto[1]>                          13          1          -    Covered              
-            bin <auto[1],auto[0]>                          13          1          -    Covered              
+            bin <auto[1],auto[0]>                          32          1          -    Covered              
             bin <auto[0],auto[0]>                         116          1          -    Covered              
         Illegal and Ignore Bins:
             ignore_bin invalid_combinations                 0                     -    ZERO                 
 
 TOTAL COVERGROUP COVERAGE: 100.00%  COVERGROUP TYPES: 1
 
-Total Coverage By Instance (filtered view): 84.87%
+Total Coverage By Instance (filtered view): 95.71%
 

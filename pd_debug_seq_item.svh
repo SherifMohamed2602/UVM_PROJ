@@ -116,7 +116,7 @@ Inputs to third instance: \nfield1_val_3 = %h, \nfield1_mask3 = %h, \nfield2_val
 
 
     constraint pd_debug_count_c {
-        rstn  == 1;
+        rstn dist {0:/ 1, 1:/ 99};
         e_valid dist {0:/ 30, 1:/ 70};
 
         match_field1 dist {0:/ 50, 1:/ 50};
@@ -165,7 +165,7 @@ Inputs to third instance: \nfield1_val_3 = %h, \nfield1_mask3 = %h, \nfield2_val
 
     }
 
-    constraint pd_debug_cascade_match_c {
+    constraint pd_debug_cascade_match1_c {
         rstn == 1;
 
         e_valid dist {0:/ 5, 1:/ 95};
@@ -186,6 +186,32 @@ Inputs to third instance: \nfield1_val_3 = %h, \nfield1_mask3 = %h, \nfield2_val
         cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0; 
 
     }
+
+
+    constraint pd_debug_cascade_match2_c {
+        rstn == 1;
+
+        e_valid dist {0:/ 5, 1:/ 95};
+
+        eq_pd[113] == 0;
+
+        cascade_match inside {0, 1, 2};
+
+        (cascade_match == 2'b00) -> (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_1) == (eq_pd);
+        
+        (cascade_match == 2'b01) -> (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_2) == (eq_pd);
+
+        (cascade_match == 2'b10) -> (mem2dbg_c_debug_pd_field2_value_cfg_mem_regarray_3) == (eq_pd);
+
+        cif2dbg_c_debug_pd_en_reg_1 == 4'b1011;
+        cif2dbg_c_debug_pd_en_reg_2 == 4'b1011;
+        cif2dbg_c_debug_pd_en_reg_3 == 4'b1111;
+        cif2dbg_c_debug_pd_captured_word_sel_3[0] == 0; 
+
+    }
+
+
+
 
 
     constraint pd_debug_cascade_trigger_c {
